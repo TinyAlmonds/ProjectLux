@@ -1,10 +1,16 @@
 # Project Lux
 
+<!-- 
+Comment: You can create the "Table of Contents", by copying the content of the README.md to this page "https://ecotrust-canada.github.io/markdown-toc/"
+-->
 - [Project Lux](#project-lux)
   * [Description](#description)
   * [Guidelines and Best Practices](#guidelines-and-best-practices)
     + [Style guidelines for Unreal Engine 4](#style-guidelines-for-unreal-engine-4)
     + [Coding guidelines](#coding-guidelines)
+    + [Git and GitHub guidelines](#git-and-github-guidelines)
+      - [Commit messages](#commit-messages)
+      - [Pull requests](#pull-requests)
 
 ## Description
 Project Lux is a 2.5D Metroidvania game and is developed with the help of Unreal Engine version *4.27*.
@@ -18,3 +24,12 @@ We follow the *Gamemakin LLC* style guidelines, which can be found [here](https:
 
 ### Coding guidelines
 For our codebase we follow the coding standard provided by the developers of the Unreal Engine, which can be found [here](https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/).
+
+### Git and GitHub guidelines
+#### Commit messages
+Our commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) style.
+
+#### Pull requests
+With the development of a new feature (on a distinct feature-branch) a *pull request* should be created, as soon as the first commit is done. Before this is not possible, because GitHub only let's you create pull requests, when changes to the project appear. 
+
+Doing so gives us the opportunity to offer suggestions for changes, review, point out errors and misunderstandings, etc. early and collects everything on a single page.
