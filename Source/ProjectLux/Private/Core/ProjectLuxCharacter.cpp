@@ -35,6 +35,7 @@ void AProjectLuxCharacter::JumpPress()
 
 void AProjectLuxCharacter::JumpRelease()
 {
+	StopJumping();
 }
 
 void AProjectLuxCharacter::MoveRight(float AxisValue)
