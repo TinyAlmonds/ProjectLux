@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ProjectLuxPlayerController.generated.h"
 
+// TODO: add documentation
 /**
  * 
  */
@@ -13,5 +14,26 @@ UCLASS()
 class PROJECTLUX_API AProjectLuxPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	// TODO: add documentation
+	AProjectLuxPlayerController();
+
+protected:
+	// TODO: add documentation
+	virtual void SetupInputComponent() override;
+
+private:
+	// TODO: add documentation
+	void JumpPressed();
+
+	// TODO: add documentation
+	void JumpReleased();
+
+	// TODO: add documentation
+	void MoveRight(float AxisValue);
+
+	// TODO: add documentation
+	void MoveUp(float AxisValue);
 	
 };
