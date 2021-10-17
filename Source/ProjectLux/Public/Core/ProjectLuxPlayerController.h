@@ -25,10 +25,10 @@ protected:
 
 private:
 	// TODO: add documentation
-	void JumpPressed();
+	void JumpPress();
 
 	// TODO: add documentation
-	void JumpReleased();
+	void JumpRelease();
 
 	// TODO: add documentation
 	void MoveRight(float AxisValue);

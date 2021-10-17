@@ -2,33 +2,51 @@
 
 
 #include "Core/ProjectLuxCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
-// Sets default values
+
+
 AProjectLuxCharacter::AProjectLuxCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 
+	JumpKeyHoldTime = 0.35;
+
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (MovementComponent)
+	{
+		MovementComponent->JumpZVelocity = 600.0f;
+	}
+
 }
 
-// Called when the game starts or when spawned
-void AProjectLuxCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 
-// Called every frame
 void AProjectLuxCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
-void AProjectLuxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AProjectLuxCharacter::JumpPress()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
+void AProjectLuxCharacter::JumpRelease()
+{
+}
+
+void AProjectLuxCharacter::MoveRight(float AxisValue)
+{
+}
+
+void AProjectLuxCharacter::MoveUp(float AxisValue)
+{
+}
+
+
+void AProjectLuxCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
