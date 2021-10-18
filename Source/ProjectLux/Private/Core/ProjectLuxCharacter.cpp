@@ -24,15 +24,27 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 
+	// Character Settings
 	JumpMaxHoldTime = 0.35;
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
+		// General Settings
 		CharacterMovementComponent->GravityScale = 5.5f;
+		CharacterMovementComponent->MaxAcceleration = 8'192.0f;
+
+		// Walking Settings
 		CharacterMovementComponent->MaxWalkSpeed = 600.0f;
+
+		// Jumping/Falling Settings
 		CharacterMovementComponent->JumpZVelocity = 1'000.0f;
+		CharacterMovementComponent->BrakingDecelerationFalling = 2'048.0f;
+		CharacterMovementComponent->AirControl = 1.0f;
+		CharacterMovementComponent->AirControlBoostMultiplier = 0.0f;
+		CharacterMovementComponent->AirControlBoostVelocityThreshold = 0.0f;
+
+		// Rotation Settings
 		CharacterMovementComponent->RotationRate = FRotator(0.0f, 14.0f, 0.0f);
 	}
 }
