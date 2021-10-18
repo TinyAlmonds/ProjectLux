@@ -12,7 +12,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	VelocityZWallSlide{-180.0f},
 	VelocityXYMultiplierWallJump{1.8f},
 	VelocityZMultiplierWallJump{1.8f},
-	bWallSlidingFlag{false}
+	bWallSlidingFlag{false},
+	MovementSpace{EMovementSpaceState::MovementIn3D},
+	PreviousMovementSpace{EMovementSpaceState::MovementIn3D}
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -65,6 +67,19 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 bool AProjectLuxCharacter::GetWallSlidingFlag() const
 {
 	return bWallSlidingFlag;
+}
+
+EMovementSpaceState AProjectLuxCharacter::GetMovementSpaceState() const
+{
+	return MovementSpace;
+}
+
+void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
+{
+	PreviousMovementSpace = MovementSpace;
+	MovementSpace = State;
+
+	OnMovementSpaceStateChanged();
 }
 
 
@@ -129,6 +144,50 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 				}
 			}
 		}
+	}
+}
+
+void AProjectLuxCharacter::OnMovementSpaceStateChanged()
+{
+	if (MovementSpace != PreviousMovementSpace)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			switch (MovementSpace)
+			{
+			case EMovementSpaceState::MovementIn2D:
+				switch (PreviousMovementSpace)
+				{
+				case EMovementSpaceState::MovementIn2D:
+					break;
+				case EMovementSpaceState::MovementIn3D:
+				case EMovementSpaceState::MovementOnSpline:
+					CharacterMovementComponent->SetPlaneConstraintEnabled(true);
+					CharacterMovementComponent->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
+					break;
+				default:
+					break;
+				}
+				break;
+			case EMovementSpaceState::MovementIn3D:
+			case EMovementSpaceState::MovementOnSpline:
+				switch (PreviousMovementSpace)
+				{
+				case EMovementSpaceState::MovementIn2D:
+					CharacterMovementComponent->SetPlaneConstraintEnabled(false);
+					break;
+				case EMovementSpaceState::MovementIn3D:
+				case EMovementSpaceState::MovementOnSpline:
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}		
 	}
 }
 
