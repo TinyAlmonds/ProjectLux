@@ -10,6 +10,7 @@
 template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
+class USplineComponent;
 
 // TODO: add documentation
 UENUM(BlueprintType)
@@ -65,6 +66,10 @@ public:
 	// TODO: add documentation
 	virtual void SetMovementSpaceState(EMovementSpaceState State);
 
+	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void SetMovementSpline(USplineComponent* MovementSplineComponent);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -89,6 +94,9 @@ private:
 	float AxisValueMoveUp;
 
 	// TODO: add documentation
+	float AxisValueMoveRight;
+
+	// TODO: add documentation
 	bool bWallSlidingFlag;
 
 	// TODO: add documentation
@@ -96,6 +104,8 @@ private:
 
 	// TODO: add documentation
 	EMovementSpaceState PreviousMovementSpace;
+
+	USplineComponent* MovementSplineComponentFromWorld;
 
 	// TODO: add documentation
 	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
