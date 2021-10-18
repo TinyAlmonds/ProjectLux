@@ -6,12 +6,21 @@
 #include "GameFramework/Character.h"
 #include "ProjectLuxCharacter.generated.h"
 
+// Forward declarations
+template<typename OptionalType>
+struct TOptional;
+struct FHitResult;
+
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
+	// TODO: add documentation
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	float VelocityZWallSlide;
+
 	// Sets default values for this character's properties
 	AProjectLuxCharacter();
 
@@ -19,21 +28,38 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// TODO: add documentation
-	void JumpPress();
+	virtual void JumpPress();
 
 	// TODO: add documentation
-	void JumpRelease();
+	virtual void JumpRelease();
 
 	// TODO: add documentation
-	void MoveRight(float AxisValue);
+	virtual void MoveRight(float AxisValue);
 
 	// TODO: add documentation
-	void MoveUp(float AxisValue);
+	virtual void MoveUp(float AxisValue);
+
+	// TODO: add documentation
+	virtual bool GetWallSlidingFlag() const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:	
+	// TODO: add documentation
+	virtual void UpdateWallSlidingFlag();
+
+	// TODO: add documentation
+	virtual void SetWallSlidingFlag(bool bFlagValue);
+
+	// TODO: add documentation
+	virtual void OnWallSlidingFlagChanged();
+
+private:
+	// TODO: add documentation
+	bool bWallSlidingFlag;
+
+	// TODO: add documentation
+	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
 
 };
