@@ -25,7 +25,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	{
 		CharacterMovementComponent->GravityScale = 5.5f;
 		CharacterMovementComponent->MaxWalkSpeed = 600.0f;
-		CharacterMovementComponent->JumpZVelocity = 1000.0f;
+		CharacterMovementComponent->JumpZVelocity = 1'000.0f;
 	}
 }
 
@@ -39,6 +39,14 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 
 void AProjectLuxCharacter::JumpPress()
 {
+	if (GetWallSlidingFlag() == true)
+	{
+		WallJump();
+	}
+	else
+	{
+		Jump();
+	}
 }
 
 void AProjectLuxCharacter::JumpRelease()
