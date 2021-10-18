@@ -10,6 +10,8 @@
 
 AProjectLuxCharacter::AProjectLuxCharacter() : 
 	VelocityZWallSlide{-180.0f},
+	VelocityXYMultiplierWallJump{1.8f},
+	VelocityZMultiplierWallJump{1.8f},
 	bWallSlidingFlag{false}
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -21,7 +23,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
-		CharacterMovementComponent->JumpZVelocity = 600.0f;
+		CharacterMovementComponent->GravityScale = 5.5f;
+		CharacterMovementComponent->MaxWalkSpeed = 600.0f;
+		CharacterMovementComponent->JumpZVelocity = 1000.0f;
 	}
 }
 
@@ -117,6 +121,24 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 				}
 			}
 		}
+	}
+}
+
+void AProjectLuxCharacter::WallJump()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	AController* PossessingController = GetController();
+	if (CharacterMovementComponent && PossessingController)
+	{
+		// Launch Character in opposite direction of its Forward Vector with the specified velocity
+		FVector LaunchDirection = -GetActorForwardVector();
+		FVector LaunchVelocity = LaunchDirection * CharacterMovementComponent->MaxWalkSpeed * VelocityXYMultiplierWallJump;
+		LaunchVelocity.Z = CharacterMovementComponent->JumpZVelocity * VelocityZMultiplierWallJump;
+
+		LaunchCharacter(LaunchVelocity, false, true);
+
+		// Rotate Character to launch direction
+		PossessingController->SetControlRotation(LaunchDirection.Rotation());
 	}
 }
 
