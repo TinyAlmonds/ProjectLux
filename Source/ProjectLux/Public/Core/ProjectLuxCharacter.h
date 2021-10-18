@@ -86,6 +86,9 @@ protected:
 
 private:
 	// TODO: add documentation
+	float AxisValueMoveUp;
+
+	// TODO: add documentation
 	bool bWallSlidingFlag;
 
 	// TODO: add documentation
