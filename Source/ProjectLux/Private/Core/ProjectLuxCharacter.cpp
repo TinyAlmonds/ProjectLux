@@ -12,6 +12,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	VelocityZWallSlide{-180.0f},
 	VelocityXYMultiplierWallJump{1.8f},
 	VelocityZMultiplierWallJump{1.8f},
+	AxisValueMoveUp{0.0f},
 	bWallSlidingFlag{false},
 	MovementSpace{EMovementSpaceState::MovementIn3D},
 	PreviousMovementSpace{EMovementSpaceState::MovementIn3D}
@@ -62,6 +63,24 @@ void AProjectLuxCharacter::MoveRight(float AxisValue)
 
 void AProjectLuxCharacter::MoveUp(float AxisValue)
 {
+	AxisValueMoveUp = AxisValue;
+	if (AxisValue != 0.0f)
+	{
+		FVector MovementDirection;
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+			break;
+		case EMovementSpaceState::MovementIn3D:
+			MovementDirection.X = AxisValue;
+			AddMovementInput(MovementDirection);
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 bool AProjectLuxCharacter::GetWallSlidingFlag() const
