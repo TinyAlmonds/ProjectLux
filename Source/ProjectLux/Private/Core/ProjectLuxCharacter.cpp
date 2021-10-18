@@ -5,6 +5,7 @@
 #include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Math/UnrealMathUtility.h"
 #include "Misc/Optional.h"
 
 
@@ -32,6 +33,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 		CharacterMovementComponent->GravityScale = 5.5f;
 		CharacterMovementComponent->MaxWalkSpeed = 600.0f;
 		CharacterMovementComponent->JumpZVelocity = 1'000.0f;
+		CharacterMovementComponent->RotationRate = FRotator(0.0f, 14.0f, 0.0f);
 	}
 }
 
@@ -52,7 +54,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		GetRootComponent()->SetWorldLocation(FVector{ClosestWorldLocationOnSpline.X, ClosestWorldLocationOnSpline.Y, CharacterWorldLocation.Z});
 	}
 
-
+	UpdateRotationToMoveInput();
 }
 
 void AProjectLuxCharacter::JumpPress()
@@ -286,4 +288,55 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
 	}
 
 	return TOptional<FHitResult>{};
+}
+
+void AProjectLuxCharacter::UpdateRotationToMoveInput()
+{
+	UWorld* World = GetWorld();
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	AController* PossessingController = GetController();
+
+	if (World && CharacterMovementComponent && PossessingController)
+	{
+		FRotator DesiredRotationFromInput(0.0f, 0.0f, 0.0f);
+		float DeltaSeconds = World->GetDeltaSeconds();
+		float RotationRateYaw = CharacterMovementComponent->RotationRate.Yaw;
+		// calculate the desired rotation depending on the input and "movement space state"
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+			if (AxisValueMoveRight != 0.0f)
+			{
+				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+			}
+			break;
+		case EMovementSpaceState::MovementIn3D:
+			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
+			{
+				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+			}
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			if ((AxisValueMoveRight != 0.0f) && MovementSplineComponentFromWorld)
+			{
+				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
+				// we only want to find the closest rotation on the spline in the XY plane, since the Character can move freely in the Z direction
+				// Note: we later only need the Yaw value for the rotation
+				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
+
+				// if the Character should go "left" rotate him by 180� to face in the left direction
+				if (AxisValueMoveRight < 0.0f)
+				{
+					ClosestWorldRotationOnSpline.Yaw += 180.0f;
+				}
+				DesiredRotationFromInput = FRotator(0.0f, ClosestWorldRotationOnSpline.Yaw, 0.0f);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+			}
+			break;
+		default:
+			break;
+		}
+	}	
 }

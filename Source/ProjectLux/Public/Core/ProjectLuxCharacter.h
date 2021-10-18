@@ -109,4 +109,7 @@ private:
 
 	// TODO: add documentation
 	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
+
+	// TODO: add documentation
+	void UpdateRotationToMoveInput();
 };
