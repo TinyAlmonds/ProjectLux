@@ -21,6 +21,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
 	float VelocityZWallSlide;
 
+	// TODO: add documentation
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	float VelocityXYMultiplierWallJump;
+
+	// TODO: add documentation
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	float VelocityZMultiplierWallJump;
+
 	// Sets default values for this character's properties
 	AProjectLuxCharacter();
 
@@ -54,6 +62,9 @@ protected:
 
 	// TODO: add documentation
 	virtual void OnWallSlidingFlagChanged();
+
+	// TODO: add documentation
+	virtual void WallJump();
 
 private:
 	// TODO: add documentation
