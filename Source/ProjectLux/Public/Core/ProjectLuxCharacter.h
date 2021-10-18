@@ -11,6 +11,15 @@ template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
 
+// TODO: add documentation
+UENUM(BlueprintType)
+enum class EMovementSpaceState : uint8
+{
+	MovementIn2D,
+	MovementIn3D,
+	MovementOnSpline
+};
+
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter
 {
@@ -50,6 +59,12 @@ public:
 	// TODO: add documentation
 	virtual bool GetWallSlidingFlag() const;
 
+	// TODO: add documentation
+	virtual EMovementSpaceState GetMovementSpaceState() const;
+
+	// TODO: add documentation
+	virtual void SetMovementSpaceState(EMovementSpaceState State);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,6 +79,9 @@ protected:
 	virtual void OnWallSlidingFlagChanged();
 
 	// TODO: add documentation
+	virtual void OnMovementSpaceStateChanged();
+
+	// TODO: add documentation
 	virtual void WallJump();
 
 private:
@@ -71,6 +89,11 @@ private:
 	bool bWallSlidingFlag;
 
 	// TODO: add documentation
-	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
+	EMovementSpaceState MovementSpace;
 
+	// TODO: add documentation
+	EMovementSpaceState PreviousMovementSpace;
+
+	// TODO: add documentation
+	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
 };
