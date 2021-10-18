@@ -2,6 +2,7 @@
 
 
 #include "Core/ProjectLuxCharacter.h"
+#include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/Optional.h"
@@ -13,9 +14,11 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	VelocityXYMultiplierWallJump{1.8f},
 	VelocityZMultiplierWallJump{1.8f},
 	AxisValueMoveUp{0.0f},
+	AxisValueMoveRight{0.0f},
 	bWallSlidingFlag{false},
 	MovementSpace{EMovementSpaceState::MovementIn3D},
-	PreviousMovementSpace{EMovementSpaceState::MovementIn3D}
+	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
+	MovementSplineComponentFromWorld{nullptr}
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -59,14 +62,38 @@ void AProjectLuxCharacter::JumpRelease()
 
 void AProjectLuxCharacter::MoveRight(float AxisValue)
 {
+	AxisValueMoveRight = AxisValue;
+
+	if (AxisValue != 0.0f)
+	{
+		FVector MovementDirection(0.0f, 0.0f, 0.0f);
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+		case EMovementSpaceState::MovementIn3D:
+			MovementDirection.Y = AxisValue;
+			AddMovementInput(MovementDirection);
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			if (MovementSplineComponentFromWorld)
+			{
+				MovementDirection = AxisValue * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
+				AddMovementInput(MovementDirection);
+			}
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void AProjectLuxCharacter::MoveUp(float AxisValue)
 {
 	AxisValueMoveUp = AxisValue;
+
 	if (AxisValue != 0.0f)
 	{
-		FVector MovementDirection;
+		FVector MovementDirection(0.0f, 0.0f, 0.0f);
 		switch (MovementSpace)
 		{
 		case EMovementSpaceState::MovementIn2D:
@@ -99,6 +126,11 @@ void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
 	MovementSpace = State;
 
 	OnMovementSpaceStateChanged();
+}
+
+void AProjectLuxCharacter::SetMovementSpline(USplineComponent* MovementSplineComponent)
+{
+	MovementSplineComponentFromWorld = MovementSplineComponent;
 }
 
 
