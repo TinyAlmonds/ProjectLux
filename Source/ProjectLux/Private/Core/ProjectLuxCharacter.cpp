@@ -41,6 +41,18 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateWallSlidingFlag();
+
+	// snap Character to closest Spline location, when in Spline Movement
+	if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
+	{
+		FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
+		// we only want to find the closest location on the spline in the XY plane, since the Character can move freely in the Z direction
+		FVector ClosestWorldLocationOnSpline = MovementSplineComponentFromWorld->FindLocationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
+
+		GetRootComponent()->SetWorldLocation(FVector{ClosestWorldLocationOnSpline.X, ClosestWorldLocationOnSpline.Y, CharacterWorldLocation.Z});
+	}
+
+
 }
 
 void AProjectLuxCharacter::JumpPress()
