@@ -6,34 +6,30 @@
 #include "GameFramework/PlayerController.h"
 #include "ProjectLuxPlayerController.generated.h"
 
-// TODO: add documentation
-/**
- * 
- */
+/** PlayerController of the ProjectLuxCharacter. */
 UCLASS()
 class PROJECTLUX_API AProjectLuxPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	// TODO: add documentation
+	/** The default constructor of the class.*/
 	AProjectLuxPlayerController();
 
 protected:
-	// TODO: add documentation
+	/** Method binding to the Input axis/action mappings.*/
 	virtual void SetupInputComponent() override;
 
 private:
-	// TODO: add documentation
+	/** Method bound to the "Jump" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void JumpPress();
 
-	// TODO: add documentation
+	/** Method bound to the "Jump" input action mapping, when the button is released. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void JumpRelease();
 
-	// TODO: add documentation
+	/** Method bound to the "MoveRight" input axis mapping. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void MoveRight(float AxisValue);
 
-	// TODO: add documentation
-	void MoveUp(float AxisValue);
-	
+	/** Method bound to the "MoveUp" input axis mapping. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void MoveUp(float AxisValue);	
 };
