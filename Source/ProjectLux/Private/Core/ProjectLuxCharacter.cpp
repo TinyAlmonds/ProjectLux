@@ -155,7 +155,7 @@ void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
 	OnMovementSpaceStateChanged();
 }
 
-void AProjectLuxCharacter::SetMovementSpline(USplineComponent* MovementSplineComponent)
+void AProjectLuxCharacter::SetMovementSpline(USplineComponent const* MovementSplineComponent)
 {
 	MovementSplineComponentFromWorld = MovementSplineComponent;
 }

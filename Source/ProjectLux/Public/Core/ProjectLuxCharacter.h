@@ -75,7 +75,7 @@ public:
 
 	// TODO: add documentation
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual void SetMovementSpline(USplineComponent* MovementSplineComponent);
+	virtual void SetMovementSpline(USplineComponent const* MovementSplineComponent);
 
 protected:
 	// Called when the game starts or when spawned
@@ -114,7 +114,7 @@ private:
 
 	// TODO: add documentation
 	UPROPERTY()
-	USplineComponent* MovementSplineComponentFromWorld;
+	USplineComponent const* MovementSplineComponentFromWorld;
 
 	// TODO: add documentation
 	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
