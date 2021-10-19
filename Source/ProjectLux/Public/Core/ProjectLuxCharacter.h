@@ -46,24 +46,31 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void JumpPress();
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void JumpRelease();
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveRight(float AxisValue);
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveUp(float AxisValue);
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual bool GetWallSlidingFlag() const;
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual EMovementSpaceState GetMovementSpaceState() const;
 
 	// TODO: add documentation
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void SetMovementSpaceState(EMovementSpaceState State);
 
 	// TODO: add documentation
