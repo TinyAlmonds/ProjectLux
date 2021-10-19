@@ -27,9 +27,18 @@ For our codebase we follow the coding standard provided by the developers of the
 
 ### Git and GitHub guidelines
 #### Commit messages
-Our commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) style.
+Our commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) style, allowing a more structured commit history. In addition, we have established other rules that fit our project well:
+- The commit message `<type>` should be followed by the `[optional scope]`, which refers to the top-level directory and subdirectory (separated by a hyphen `-`)  related to the change, e.g. `feat(maps):` or `fix(source-core):`. In case of general or unspecified changes the `[optional scope]` can be omitted.
+- Under the commit message a `-file`, `-class` or `-asset` is followed by the related name, which is involved in the commit, e.g.
+```
+feat(source-core): Increased max velocity when walking
+
+-class: ProjectLuxCharacter
+```
 
 #### Pull requests
 With the development of a new feature (on a distinct feature-branch) a *pull request* should be created, as soon as the first commit is done. Before this is not possible, because GitHub only let's you create pull requests, when changes to the project appear. 
 
 Doing so gives us the opportunity to offer suggestions for changes, review, point out errors and misunderstandings, etc. early and collects everything on a single page.
+
+The pull-request should be created/set as "*Draft*" and "*Draft:*" added at the start of the title, until the work on the feature is over.
