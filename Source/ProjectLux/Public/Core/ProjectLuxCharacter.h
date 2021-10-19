@@ -112,6 +112,8 @@ private:
 	// TODO: add documentation
 	EMovementSpaceState PreviousMovementSpace;
 
+	// TODO: add documentation
+	UPROPERTY()
 	USplineComponent* MovementSplineComponentFromWorld;
 
 	// TODO: add documentation
