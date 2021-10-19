@@ -2,6 +2,7 @@
 
 
 #include "Core/ProjectLuxCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
