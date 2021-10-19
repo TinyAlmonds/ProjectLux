@@ -216,7 +216,6 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 						// let the Character slide down the wall on the specified velocity
 						FVector const CurrentVelocity = CharacterMovementComponent->GetLastUpdateVelocity();
 						MovementComponent->Velocity = FVector{ CurrentVelocity.X, CurrentVelocity.Y, VelocityZWallSlide };
-
 					}
 				}
 			}
@@ -293,8 +292,9 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
 	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f));
 	FName LineTraceProfileName = FName(TEXT("IgnoreOnlyPawn"));
 	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 
-	if (GetWorld()->LineTraceSingleByChannel(OutWallHit, LineTraceStart, LineTraceEnd, ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByProfile(OutWallHit, LineTraceStart, LineTraceEnd, LineTraceProfileName, CollisionParams))
 	{
 		return TOptional<FHitResult>{OutWallHit};
 	}
