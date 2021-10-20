@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,7 +10,7 @@ struct TOptional;
 struct FHitResult;
 class USplineComponent;
 
-// TODO: add documentation
+/** Enum indicating the space in which the Character is able to move. */
 UENUM(BlueprintType)
 enum class EMovementSpaceState : uint8
 {
@@ -27,98 +25,122 @@ class PROJECTLUX_API AProjectLuxCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// TODO: add documentation
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	/** Velocity in z-direction, when the Character is sliding down a wall (range: <0.0 [uu/s]). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMax = "0.0"))
 	float VelocityZWallSlide;
 
-	// TODO: add documentation
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	/** Scales the Velocity (MaxWalkSpeed of the CharacterMovementComponent) in x/y-direction when the Character performs a WallJump (range: >0.0 [uu/s]). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
 	float VelocityXYMultiplierWallJump;
 
-	// TODO: add documentation
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement")
+	/** Scales the Velocity (JumpZVelocity of the CharacterMovementComponent) in z-direction when the Character performs a WallJump (range: >0.0 [uu/s]). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
 	float VelocityZMultiplierWallJump;
 
-	// Sets default values for this character's properties
+	/** Sets default values for this character's properties */
 	AProjectLuxCharacter();
 
-	// Called every frame
+	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
 
-	// TODO: add documentation
+	/** Performs a wall jump when the Character is wall sliding otherwise a jump until the jump button is released or exceeds the max hold time. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void JumpPress();
 
-	// TODO: add documentation
+	/** Stops the jump of the Character. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void JumpRelease();
 
-	// TODO: add documentation
+	/**
+	 * Moves the Character to the right and updates the related axis value member.
+	 * @param AxisValue - The axis value to set (range: -1.0 to 1.0).
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveRight(float AxisValue);
 
-	// TODO: add documentation
+	/**
+	 * Moves the Character up and updates the related axis value member.
+	 * @param AxisValue - The axis value to set (range: -1.0 to 1.0).
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveUp(float AxisValue);
 
-	// TODO: add documentation
+	/**
+	 * Returns the current value of the wall sliding flag.
+	 * @return True if the Character is wall sliding, False otherwise.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual bool GetWallSlidingFlag() const;
 
-	// TODO: add documentation
+	/**
+	 * Returns the current value of the movement space state.
+	 * @return The current value of the movement space state member.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual EMovementSpaceState GetMovementSpaceState() const;
 
-	// TODO: add documentation
+	/**
+	 * Sets the movement space state of the Character to the given value and triggers a logic on state changes.
+	 * @param State - The EMovementSpaceState to set.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void SetMovementSpaceState(EMovementSpaceState State);
 
-	// TODO: add documentation
+	/**
+	 * Sets the USplineComponent of the Character to the given value which is needed for the EMovementSpaceState::MovementOnSpline state.
+	 * @param MovementSplineComponent - The USplineComponent to set.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void SetMovementSpline(USplineComponent const* MovementSplineComponent);
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned. */
 	virtual void BeginPlay() override;
 
-	// TODO: add documentation
+	/** Determines if the Character should wall slide and sets the related flag. This method is called on every Tick. */
 	virtual void UpdateWallSlidingFlag();
 
-	// TODO: add documentation
+	/**
+	 * Sets the wall sliding flag of the Character to the given value and triggers a behavior to the according flag value.
+	 * @param bFlagValue - The flag value to set.
+	 */
 	virtual void SetWallSlidingFlag(bool bFlagValue);
 
-	// TODO: add documentation
+	/** Lets the Character sliding down a wall, if the wall sliding flag is True. */
 	virtual void OnWallSlidingFlagChanged();
 
-	// TODO: add documentation
+	/** Reduces/extends the space in which the Character can move.*/
 	virtual void OnMovementSpaceStateChanged();
 
-	// TODO: add documentation
+	/** Launches the Character of the wall and rotates her towards launch direction. */
 	virtual void WallJump();
 
 private:
-	// TODO: add documentation
+	/** Member holding the last set value of the MoveUp axis mapping. */
 	float AxisValueMoveUp;
 
-	// TODO: add documentation
+	/** Member holding the last set value of the MoveRight axis mapping. */
 	float AxisValueMoveRight;
 
-	// TODO: add documentation
+	/** Member indicating whether the Character should wall slide or not. */
 	bool bWallSlidingFlag;
 
-	// TODO: add documentation
+	/** Member indicating the space the Character is currently able to move in. */
 	EMovementSpaceState MovementSpace;
 
-	// TODO: add documentation
+	/** Member indicating the space the Character was able to move in before the change. */
 	EMovementSpaceState PreviousMovementSpace;
 
-	// TODO: add documentation
+	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
 	USplineComponent const* MovementSplineComponentFromWorld;
 
-	// TODO: add documentation
+	/**
+	 * Checks, whether the Character touches a wall for the wall slide.
+	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
+	 */
 	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
 
-	// TODO: add documentation
+	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
 	void UpdateRotationToMoveInput();
 };
