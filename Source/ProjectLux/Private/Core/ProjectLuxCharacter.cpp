@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Core/ProjectLuxCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
@@ -170,21 +167,24 @@ void AProjectLuxCharacter::UpdateWallSlidingFlag()
 {
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 
-	if (CharacterMovementComponent->IsFalling())
+	if (CharacterMovementComponent)
 	{
-		if (IsTouchingWallForWallSlide())
+		if (CharacterMovementComponent->IsFalling())
 		{
-			SetWallSlidingFlag(true);
+			if (IsTouchingWallForWallSlide())
+			{
+				SetWallSlidingFlag(true);
+			}
+			else
+			{
+				SetWallSlidingFlag(false);
+			}
 		}
 		else
 		{
 			SetWallSlidingFlag(false);
 		}
-	}
-	else
-	{
-		SetWallSlidingFlag(false);
-	}
+	}	
 }
 
 void AProjectLuxCharacter::SetWallSlidingFlag(bool bFlagValue)
@@ -339,7 +339,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 				// Note: we later only need the Yaw value for the rotation
 				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
 
-				// if the Character should go "left" rotate him by 180� to face in the left direction
+				// if the Character should go "left" rotate him by 180degrees to face in the left direction
 				if (AxisValueMoveRight < 0.0f)
 				{
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
