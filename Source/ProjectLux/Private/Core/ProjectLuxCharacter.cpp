@@ -1,4 +1,5 @@
 #include "Core/ProjectLuxCharacter.h"
+#include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
@@ -21,6 +22,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Construct the ASC
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Character Settings
 	JumpMaxHoldTime = 0.35;
@@ -65,6 +69,21 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	}
 
 	UpdateRotationToMoveInput();
+}
+
+UAbilitySystemComponent* AProjectLuxCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AProjectLuxCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
 }
 
 void AProjectLuxCharacter::JumpPress()

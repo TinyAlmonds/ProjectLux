@@ -1,10 +1,13 @@
 #pragma once
 
+
+#include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ProjectLuxCharacter.generated.h"
 
 // Forward declarations
+class UAbilitySystemComponent;
 template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
@@ -20,7 +23,7 @@ enum class EMovementSpaceState : uint8
 };
 
 UCLASS()
-class PROJECTLUX_API AProjectLuxCharacter : public ACharacter
+class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -42,6 +45,16 @@ public:
 
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
+
+	/**
+	 * Returns the AbilitySystemComponent (ASC) of this Actor.
+	 * @return The AbilitySystemComponent (ASC) of this Actor.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Character|Abilities")
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	/** Runs logic when this Character is possessed. */
+	virtual void PossessedBy(AController* NewController) override;
 
 	/** Performs a wall jump when the Character is wall sliding otherwise a jump until the jump button is released or exceeds the max hold time. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
@@ -116,6 +129,10 @@ protected:
 	virtual void WallJump();
 
 private:
+	/** The AbilitySystemComponent of this Actor. */
+	UPROPERTY()
+	UAbilitySystemComponent* AbilitySystemComponent;
+
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	float AxisValueMoveUp;
 
