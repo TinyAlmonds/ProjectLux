@@ -35,5 +35,8 @@ private:
 	 * Method bound to the "MoveUp" input axis mapping. Redirects the input to the related method of the ProjectLuxCharacter.
 	 * @param AxisValue - The current axis value (range: -1.0 to 1.0).
 	 */
-	void MoveUp(float AxisValue);	
+	void MoveUp(float AxisValue);
+
+	/** Method bound to the "Dash" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void DashPress();
 };
