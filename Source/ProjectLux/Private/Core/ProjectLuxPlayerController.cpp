@@ -16,6 +16,8 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("Jump", IE_Released, this, &AProjectLuxPlayerController::JumpRelease);
     InputComponent->BindAxis("MoveUp", this, &AProjectLuxPlayerController::MoveUp);
     InputComponent->BindAxis("MoveRight", this, &AProjectLuxPlayerController::MoveRight);
+    InputComponent->BindAction("Dash", IE_Pressed, this, &AProjectLuxPlayerController::DashPress);
+
 }
 
 void AProjectLuxPlayerController::JumpPress()
@@ -66,6 +68,19 @@ void AProjectLuxPlayerController::MoveUp(float AxisValue)
         if (LuxCharacter)
         {
             LuxCharacter->MoveUp(AxisValue);
+        }
+    }
+}
+
+void AProjectLuxPlayerController::DashPress()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->DashPress();
         }
     }
 }
