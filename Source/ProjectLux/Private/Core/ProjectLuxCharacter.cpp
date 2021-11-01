@@ -536,14 +536,14 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 			if (AxisValueMoveRight != 0.0f)
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				PossessingController->SetControlRotation(DesiredRotationFromInput);
 			}
 			break;
 		case EMovementSpaceState::MovementIn3D:
 			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				PossessingController->SetControlRotation(DesiredRotationFromInput);
 			}
 			break;
 		case EMovementSpaceState::MovementOnSpline:
@@ -560,7 +560,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}
 				DesiredRotationFromInput = FRotator(0.0f, ClosestWorldRotationOnSpline.Yaw, 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				PossessingController->SetControlRotation(DesiredRotationFromInput);
 			}
 			break;
 		default:
