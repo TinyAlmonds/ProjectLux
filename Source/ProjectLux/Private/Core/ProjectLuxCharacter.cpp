@@ -144,6 +144,17 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	// limit negative Z-Velocity (for better falling/air control, etc.)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			FVector CharacterVelocity = CharacterMovementComponent->GetLastUpdateVelocity();
+			CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, -CharacterMovementComponent->MaxWalkSpeed * VelocityMultiplierDash / 1.0f) : CharacterVelocity.Z;
+			CharacterMovementComponent->Velocity = CharacterVelocity;
+		}
+	}
 }
 
 UAbilitySystemComponent* AProjectLuxCharacter::GetAbilitySystemComponent() const
