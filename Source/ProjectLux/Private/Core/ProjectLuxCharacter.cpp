@@ -1,4 +1,5 @@
 #include "Core/ProjectLuxCharacter.h"
+#include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
@@ -8,17 +9,14 @@
 #include "Misc/Optional.h"
 
 
-
 AProjectLuxCharacter::AProjectLuxCharacter() : 
-	VelocityZWallSlide{-180.0f},
-	VelocityXYMultiplierWallJump{1.8f},
-	VelocityZMultiplierWallJump{1.8f},
 	AxisValueMoveUp{0.0f},
 	AxisValueMoveRight{0.0f},
 	bWallSlidingFlag{false},
 	MovementSpace{EMovementSpaceState::MovementIn3D},
 	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
-	MovementSplineComponentFromWorld{nullptr}
+	MovementSplineComponentFromWorld{nullptr},
+	DashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash"))}
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -27,27 +25,67 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Character Settings
-	JumpMaxHoldTime = 0.35;
+	VelocityZWallSlide = DefaultValues.VelocityZWallSlide;
+	VelocityXYMultiplierWallJump = DefaultValues.VelocityXYMultiplierWallJump;
+	VelocityZMultiplierWallJump = DefaultValues.VelocityZMultiplierWallJump;
+	VelocityMultiplierDash = DefaultValues.VelocityMultiplierDash;
+	JumpMaxHoldTime = DefaultValues.CharacterJumpMaxHoldTime;
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
 		// General Settings
-		CharacterMovementComponent->GravityScale = 5.5f;
-		CharacterMovementComponent->MaxAcceleration = 8'192.0f;
+		CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
+		CharacterMovementComponent->MaxAcceleration = DefaultValues.CharacterMovementComponentMaxAcceleration;
 
 		// Walking Settings
-		CharacterMovementComponent->MaxWalkSpeed = 600.0f;
+		CharacterMovementComponent->MaxWalkSpeed = DefaultValues.CharacterMovementComponentMaxWalkSpeed;
+		CharacterMovementComponent->GroundFriction = DefaultValues.CharacterMovementComponentGroundFriction;
 
 		// Jumping/Falling Settings
-		CharacterMovementComponent->JumpZVelocity = 1'000.0f;
-		CharacterMovementComponent->BrakingDecelerationFalling = 2'048.0f;
-		CharacterMovementComponent->AirControl = 1.0f;
-		CharacterMovementComponent->AirControlBoostMultiplier = 0.0f;
-		CharacterMovementComponent->AirControlBoostVelocityThreshold = 0.0f;
+		CharacterMovementComponent->JumpZVelocity = DefaultValues.CharacterMovementComponentJumpZVelocity;
+		CharacterMovementComponent->BrakingDecelerationFalling = DefaultValues.CharacterMovementComponentBrakingDecelerationFalling;
+		CharacterMovementComponent->AirControl = DefaultValues.CharacterMovementComponentAirControl;
+		CharacterMovementComponent->AirControlBoostMultiplier = DefaultValues.CharacterMovementComponentAirControlBoostMultiplier;
+		CharacterMovementComponent->AirControlBoostVelocityThreshold = DefaultValues.CharacterMovementComponentAirControlBoostVelocityThreshold;
 
 		// Rotation Settings
-		CharacterMovementComponent->RotationRate = FRotator(0.0f, 14.0f, 0.0f);
+		CharacterMovementComponent->RotationRate = DefaultValues.CharacterMovementComponentRotationRate;
+	}
+}
+
+void AProjectLuxCharacter::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	// Update default values with properties
+	// Character Settings
+	DefaultValues.VelocityZWallSlide = VelocityZWallSlide;
+	DefaultValues.VelocityXYMultiplierWallJump = VelocityXYMultiplierWallJump;
+	DefaultValues.VelocityZMultiplierWallJump= VelocityZMultiplierWallJump;
+	DefaultValues.VelocityMultiplierDash = VelocityMultiplierDash;
+	DefaultValues.CharacterJumpMaxHoldTime = JumpMaxHoldTime;
+
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		// General Settings
+		DefaultValues.CharacterMovementComponentGravityScale = CharacterMovementComponent->GravityScale;
+		DefaultValues.CharacterMovementComponentMaxAcceleration = CharacterMovementComponent->MaxAcceleration;
+
+		// Walking Settings
+		DefaultValues.CharacterMovementComponentMaxWalkSpeed = CharacterMovementComponent->MaxWalkSpeed;
+		DefaultValues.CharacterMovementComponentGroundFriction = CharacterMovementComponent->GroundFriction;
+
+		// Jumping/Falling Settings
+		DefaultValues.CharacterMovementComponentJumpZVelocity = CharacterMovementComponent->JumpZVelocity;
+		DefaultValues.CharacterMovementComponentBrakingDecelerationFalling = CharacterMovementComponent->BrakingDecelerationFalling;
+		DefaultValues.CharacterMovementComponentAirControl = CharacterMovementComponent->AirControl;
+		DefaultValues.CharacterMovementComponentAirControlBoostMultiplier = CharacterMovementComponent->AirControlBoostMultiplier;
+		DefaultValues.CharacterMovementComponentAirControlBoostVelocityThreshold = CharacterMovementComponent->AirControlBoostVelocityThreshold;
+
+		// Rotation Settings
+		DefaultValues.CharacterMovementComponentRotationRate = CharacterMovementComponent->RotationRate;
 	}
 }
 
@@ -64,11 +102,48 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 		// we only want to find the closest location on the spline in the XY plane, since the Character can move freely in the Z direction
 		FVector ClosestWorldLocationOnSpline = MovementSplineComponentFromWorld->FindLocationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
-
 		GetRootComponent()->SetWorldLocation(FVector{ClosestWorldLocationOnSpline.X, ClosestWorldLocationOnSpline.Y, CharacterWorldLocation.Z});
 	}
 
-	UpdateRotationToMoveInput();
+	if (AbilitySystemComponent)
+	{
+		// only allow rotation to movement input when "dash ability" is inactive
+		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag) == false)
+		{
+			UpdateRotationToMoveInput();
+		}
+		else
+		{
+			// stop jumping, when "dash ability" is active
+			UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+			if (CharacterMovementComponent)
+			{
+				if (CharacterMovementComponent->IsFalling())
+				{
+					StopJumping();
+				}
+			}
+
+			// rotate Character while dashing on a Spline
+			if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
+			{
+				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
+				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
+
+				// face/rotate the Character in Dash direction, since the FindRotationClosestToWorldLocation() does not account for this
+				if (FMath::Abs(ClosestWorldRotationOnSpline.Yaw - GetActorForwardVector().Rotation().Yaw) > 90.0f)
+				{
+					ClosestWorldRotationOnSpline.Yaw += 180.0f;
+				}
+
+				AController* PossessingController = GetController();
+				if (PossessingController)
+				{
+					PossessingController->SetControlRotation(ClosestWorldRotationOnSpline);
+				}
+			}
+		}
+	}
 }
 
 UAbilitySystemComponent* AProjectLuxCharacter::GetAbilitySystemComponent() const
@@ -83,11 +158,28 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+		// remove and add again the default abilities in case of changes
+		AbilitySystemComponent->ClearAllAbilities();
+		for (TSubclassOf<UGameplayAbility> const & DefaultAbility : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility, 1, -1, this));
+		}
+		
 	}
 }
 
 void AProjectLuxCharacter::JumpPress()
 {
+	if (AbilitySystemComponent)
+	{
+		// block activation of jumps when "dash ability" is active
+		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		{
+			return;
+		}
+	}
+
 	if (GetWallSlidingFlag() == true)
 	{
 		WallJump();
@@ -106,6 +198,15 @@ void AProjectLuxCharacter::JumpRelease()
 void AProjectLuxCharacter::MoveRight(float AxisValue)
 {
 	AxisValueMoveRight = AxisValue;
+
+	if (AbilitySystemComponent)
+	{
+		// block movement when "dash ability" is active
+		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		{
+			return;
+		}
+	}
 
 	if (AxisValue != 0.0f)
 	{
@@ -134,6 +235,15 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 {
 	AxisValueMoveUp = AxisValue;
 
+	if (AbilitySystemComponent)
+	{
+		// block movement when "dash ability" is active
+		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		{
+			return;
+		}
+	}
+
 	if (AxisValue != 0.0f)
 	{
 		FVector MovementDirection(0.0f, 0.0f, 0.0f);
@@ -150,6 +260,14 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 		default:
 			break;
 		}
+	}
+}
+
+void AProjectLuxCharacter::DashPress()
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag));
 	}
 }
 
@@ -217,6 +335,15 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 {
 	if (GetWallSlidingFlag() == true)
 	{
+		if (AbilitySystemComponent)
+		{
+			// block wall sliding when "dash ability" is active
+			if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+			{
+				return;
+			}
+		}
+
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
@@ -295,7 +422,7 @@ void AProjectLuxCharacter::WallJump()
 	{
 		// Launch Character in opposite direction of its Forward Vector with the specified velocity
 		FVector LaunchDirection = -GetActorForwardVector();
-		FVector LaunchVelocity = LaunchDirection * CharacterMovementComponent->MaxWalkSpeed * VelocityXYMultiplierWallJump;
+		FVector LaunchVelocity = LaunchDirection * (CharacterMovementComponent->MaxWalkSpeed * VelocityXYMultiplierWallJump);
 		LaunchVelocity.Z = CharacterMovementComponent->JumpZVelocity * VelocityZMultiplierWallJump;
 
 		LaunchCharacter(LaunchVelocity, false, true);
@@ -305,11 +432,80 @@ void AProjectLuxCharacter::WallJump()
 	}
 }
 
+void AProjectLuxCharacter::Dash()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	AController* PossessingController = GetController();
+	if (CharacterMovementComponent && PossessingController)
+	{
+		// determine dash direction -and rotation and normalize the direction vector:
+		// when "wall sliding" dash horizontally from the wall, else determine dash direction from input
+		FVector DashDirection(0.0f, 0.0f, 0.0f);
+		FRotator DashRotation(0.0f, 0.0f, 0.0f);
+		if (bWallSlidingFlag == true)
+		{
+			DashDirection = -GetActorForwardVector();
+			DashRotation = DashDirection.Rotation();
+		}
+		else
+		{
+			switch (MovementSpace)
+			{
+			case EMovementSpaceState::MovementIn3D:
+				// since the character is instantly rotating to the input, the forward vector direction is the same as the input direction
+				DashDirection = GetActorForwardVector();
+				DashRotation = DashDirection.Rotation();
+				break;
+			case EMovementSpaceState::MovementIn2D:
+			case EMovementSpaceState::MovementOnSpline:
+				// we still want to dash even if no input is given (in this case dash in forward direction of the character; else in the direction of the input)
+				if ((AxisValueMoveUp == 0.0f) && (AxisValueMoveRight == 0.0f))
+				{
+					DashDirection = GetActorForwardVector();
+					DashRotation = DashDirection.Rotation();
+				}
+				else
+				{
+					DashDirection = FVector(0.0f, AxisValueMoveRight, AxisValueMoveUp);
+					DashRotation = GetActorForwardVector().Rotation();
+				}				
+				break;
+			default:
+				return;
+				break;
+			}
+		}
+		DashDirection.Normalize();
+
+		// change som values on the CharacterMovementComponent, so that the dash is the same on the ground as in the air
+		CharacterMovementComponent->GroundFriction = 0.0f;
+		CharacterMovementComponent->GravityScale = 0.0f;
+
+		// perform the dash in the direction of its velocity vector
+		FVector DashVelocityDirection = DashDirection * (CharacterMovementComponent->MaxWalkSpeed * VelocityMultiplierDash);
+		LaunchCharacter(DashVelocityDirection, true, true);
+
+		// rotate Character to dash direction but only around Yaw axis
+		PossessingController->SetControlRotation(DashRotation);
+	}
+}
+
+void AProjectLuxCharacter::StopDash()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->GroundFriction = DefaultValues.CharacterMovementComponentGroundFriction;
+		CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
+		CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
+	}
+}
+
 TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
 {
 	FHitResult OutWallHit;
 	FVector LineTraceStart = GetActorLocation();
-	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f));
+	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f)); //TODO: increase literal to smooth wall jump -/ slide
 	FName LineTraceProfileName = FName(TEXT("IgnoreOnlyPawn"));
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);

@@ -4,6 +4,7 @@
 #include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "ProjectLuxCharacter.generated.h"
 
 // Forward declarations
@@ -21,6 +22,32 @@ enum class EMovementSpaceState : uint8
 	MovementIn3D,
 	MovementOnSpline
 };
+
+/** Struct holding default values for the ProjectLuxCharacter. */
+USTRUCT()
+struct FProjectLuxCharacterDefaultValues
+{
+	GENERATED_BODY()
+
+	FProjectLuxCharacterDefaultValues() {};
+
+	float VelocityZWallSlide{ -180.0f };
+	float VelocityXYMultiplierWallJump{ 1.8f };
+	float VelocityZMultiplierWallJump{ 1.8f };
+	float VelocityMultiplierDash{ 3.0f };
+	float CharacterJumpMaxHoldTime{ 0.35f };
+	float CharacterMovementComponentGravityScale{ 5.5f };
+	float CharacterMovementComponentMaxAcceleration{ 8192.0f };
+	float CharacterMovementComponentMaxWalkSpeed{ 600.0f };
+	float CharacterMovementComponentGroundFriction{ 8.0f };
+	float CharacterMovementComponentJumpZVelocity{ 1000.0f };
+	float CharacterMovementComponentBrakingDecelerationFalling{ 2048.0f };
+	float CharacterMovementComponentAirControl{ 1.0f };
+	float CharacterMovementComponentAirControlBoostMultiplier{ 0.0f };
+	float CharacterMovementComponentAirControlBoostVelocityThreshold{ 0.0f };
+	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 360.0f, 0.0f);
+};
+
 
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
@@ -40,8 +67,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
 	float VelocityZMultiplierWallJump;
 
+	/** Scales the Velocity (MaxWalkSpeed of the CharacterMovementComponent) when the Character performs a Dash (range: >0.0 [uu/s]). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
+	float VelocityMultiplierDash;
+	
+	/** Default GameplayAbilities for this character. These will be removed and added again on character possession. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
+
 	/** Sets default values for this character's properties */
 	AProjectLuxCharacter();
+
+	/** Called after the C++ constructor and after the properties have been initialized, including those loaded from config. */
+	virtual void PostInitProperties() override;
 
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
@@ -77,6 +115,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveUp(float AxisValue);
+
+	/** Performs the dash ability when the Character has this ability. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void DashPress();
 
 	/**
 	 * Returns the current value of the wall sliding flag.
@@ -128,7 +170,18 @@ protected:
 	/** Launches the Character of the wall and rotates her towards launch direction. */
 	virtual void WallJump();
 
+	/** Dashes the Character rotates her towards dash direction. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
+	virtual void Dash();
+
+	/** Stops the dash of the Character. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
+	virtual void StopDash();
+
 private:
+	/** The default values for various members of this Character. */
+	FProjectLuxCharacterDefaultValues DefaultValues;
+
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
 	UAbilitySystemComponent* AbilitySystemComponent;
@@ -151,6 +204,9 @@ private:
 	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
 	USplineComponent const* MovementSplineComponentFromWorld;
+
+	/** Member holding the tag which describes the Dash ability. */
+	FGameplayTag DashAbilityTag;
 
 	/**
 	 * Checks, whether the Character touches a wall for the wall slide.
