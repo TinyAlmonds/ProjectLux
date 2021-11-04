@@ -310,6 +310,11 @@ void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
 	OnMovementSpaceStateChanged();
 }
 
+EMovementSpaceState AProjectLuxCharacter::GetPreviousMovementSpaceState() const
+{
+	return PreviousMovementSpace;
+}
+
 void AProjectLuxCharacter::SetMovementSpline(USplineComponent const* MovementSplineComponent)
 {
 	MovementSplineComponentFromWorld = MovementSplineComponent;
