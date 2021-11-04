@@ -142,6 +142,13 @@ public:
 	virtual void SetMovementSpaceState(EMovementSpaceState State);
 
 	/**
+	 * Returns the previous value of the movement space state.
+	 * @return The previous value of the movement space state member.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual EMovementSpaceState GetPreviousMovementSpaceState() const;
+
+	/**
 	 * Sets the USplineComponent of the Character to the given value which is needed for the EMovementSpaceState::MovementOnSpline state.
 	 * @param MovementSplineComponent - The USplineComponent to set.
 	 */
