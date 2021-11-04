@@ -397,6 +397,7 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 {
 	if (MovementSpace != PreviousMovementSpace)
 	{
+		// restrict the movement of the character
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
@@ -433,7 +434,10 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 			default:
 				break;
 			}
-		}		
+		}	
+
+		// call the event of the MovementSpaceState change, so that designers can react to the change
+		MovementSpaceStateChanged();
 	}
 }
 

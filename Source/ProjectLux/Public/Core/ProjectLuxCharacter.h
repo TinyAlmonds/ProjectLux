@@ -167,6 +167,10 @@ protected:
 	/** Reduces/extends the space in which the Character can move.*/
 	virtual void OnMovementSpaceStateChanged();
 
+	/** Event for the Blueprint class to react on MovementSpaceState changes.*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Movement", DisplayName = "OnMovementSpaceStateChanged")
+	void MovementSpaceStateChanged();
+
 	/** Launches the Character of the wall and rotates her towards launch direction. */
 	virtual void WallJump();
 
