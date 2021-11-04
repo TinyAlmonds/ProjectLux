@@ -208,6 +208,12 @@ private:
 	/** Member holding the tag which describes the Dash ability. */
 	FGameplayTag DashAbilityTag;
 
+	/** Member holding the tag which describes the Double-Dash ability. */
+	FGameplayTag DoubleDashAbilityTag;
+
+	/** Member holding the tags of abilities blocking the MoveRight-/Up input. */
+	FGameplayTagContainer MoveBlockingAbilityTags;
+
 	/**
 	 * Checks, whether the Character touches a wall for the wall slide.
 	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
