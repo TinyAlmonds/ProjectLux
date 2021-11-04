@@ -16,13 +16,18 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MovementSpace{EMovementSpaceState::MovementIn3D},
 	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
 	MovementSplineComponentFromWorld{nullptr},
-	DashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash"))}
+	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
+	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))}
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Construct the ASC
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
+	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
+	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
 
 	// Character Settings
 	VelocityZWallSlide = DefaultValues.VelocityZWallSlide;
@@ -107,8 +112,8 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 
 	if (AbilitySystemComponent)
 	{
-		// only allow rotation to movement input when "dash ability" is inactive
-		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag) == false)
+		// only allow rotation to movement input when "dash or double-dash ability" is inactive
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
 		{
 			UpdateRotationToMoveInput();
 		}
@@ -184,8 +189,10 @@ void AProjectLuxCharacter::JumpPress()
 {
 	if (AbilitySystemComponent)
 	{
-		// block activation of jumps when "dash ability" is active
-		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		// block jumping when "dash or double-dash ability" is active
+		// Note: We are using the same tags as for the "move blocking", since they are the same. 
+		// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 		{
 			return;
 		}
@@ -212,8 +219,8 @@ void AProjectLuxCharacter::MoveRight(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "dash ability" is active
-		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		// block movement when "dash or double-dash ability" is active
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 		{
 			return;
 		}
@@ -248,8 +255,8 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "dash ability" is active
-		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		// block movement when "dash or double-dash ability" is active
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 		{
 			return;
 		}
@@ -278,7 +285,10 @@ void AProjectLuxCharacter::DashPress()
 {
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag));
+		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
+		{
+			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DoubleDashAbilityTag));
+		}
 	}
 }
 
@@ -348,8 +358,10 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 	{
 		if (AbilitySystemComponent)
 		{
-			// block wall sliding when "dash ability" is active
-			if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+			// block wall-sliding when "dash or double-dash ability" is active
+			// Note: We are using the same tags as for the "move blocking", since they are the same.
+			// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
+			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 			{
 				return;
 			}
@@ -463,9 +475,17 @@ void AProjectLuxCharacter::Dash()
 			switch (MovementSpace)
 			{
 			case EMovementSpaceState::MovementIn3D:
-				// since the character is instantly rotating to the input, the forward vector direction is the same as the input direction
-				DashDirection = GetActorForwardVector();
-				DashRotation = DashDirection.Rotation();
+				// we still want to dash even if no input is given (in this case dash in forward direction of the character; else in the direction of the input)
+				if ((AxisValueMoveUp == 0.0f) && (AxisValueMoveRight == 0.0f))
+				{
+					DashDirection = GetActorForwardVector();
+					DashRotation = DashDirection.Rotation();
+				}
+				else
+				{
+					DashDirection = FVector(AxisValueMoveUp, AxisValueMoveRight, 0.0f);
+					DashRotation = DashDirection.Rotation();
+				}
 				break;
 			case EMovementSpaceState::MovementIn2D:
 			case EMovementSpaceState::MovementOnSpline:
@@ -475,10 +495,17 @@ void AProjectLuxCharacter::Dash()
 					DashDirection = GetActorForwardVector();
 					DashRotation = DashDirection.Rotation();
 				}
-				else
+				// we don't rotate the Character if we only dash upwards/downwards
+				else if (AxisValueMoveRight == 0.0f)
 				{
 					DashDirection = FVector(0.0f, AxisValueMoveRight, AxisValueMoveUp);
 					DashRotation = GetActorForwardVector().Rotation();
+				}
+				// rotate to input in all other cases
+				else
+				{
+					DashDirection = FVector(0.0f, AxisValueMoveRight, AxisValueMoveUp);
+					DashRotation = DashDirection.Rotation();
 				}				
 				break;
 			default:
@@ -488,7 +515,7 @@ void AProjectLuxCharacter::Dash()
 		}
 		DashDirection.Normalize();
 
-		// change som values on the CharacterMovementComponent, so that the dash is the same on the ground as in the air
+		// change some values on the CharacterMovementComponent, so that the dash is the same on the ground as in the air
 		CharacterMovementComponent->GroundFriction = 0.0f;
 		CharacterMovementComponent->GravityScale = 0.0f;
 
@@ -497,6 +524,7 @@ void AProjectLuxCharacter::Dash()
 		LaunchCharacter(DashVelocityDirection, true, true);
 
 		// rotate Character to dash direction but only around Yaw axis
+		DashRotation = FRotator(0.0f, DashRotation.Yaw, 0.0f);
 		PossessingController->SetControlRotation(DashRotation);
 	}
 }
