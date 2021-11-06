@@ -155,7 +155,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
-			FVector CharacterVelocity = CharacterMovementComponent->GetLastUpdateVelocity();
+			FVector CharacterVelocity = CharacterMovementComponent->Velocity;
 			CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, -CharacterMovementComponent->MaxWalkSpeed * VelocityMultiplierDash / 1.0f) : CharacterVelocity.Z;
 			CharacterMovementComponent->Velocity = CharacterVelocity;
 		}
@@ -375,23 +375,18 @@ void AProjectLuxCharacter::OnWallSlidingFlagChanged()
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
-			UMovementComponent* MovementComponent = Cast<UMovementComponent>(CharacterMovementComponent);
-			if (MovementComponent)
+			TOptional<FHitResult> WallHit = IsTouchingWallForWallSlide();
+			if (WallHit)
 			{
-				TOptional<FHitResult> WallHit = IsTouchingWallForWallSlide();
-				if (WallHit)
+				AController* PossessingController = GetController();
+				if (PossessingController)
 				{
-					AController* PossessingController = GetController();
-					if (PossessingController)
-					{
-						// rotate Character to face towards the negated normal of the wall
-						FRotator RotationToFaceWall = (-(WallHit.GetValue().Normal)).Rotation();
-						PossessingController->SetControlRotation(RotationToFaceWall);
+					// rotate Character to face towards the negated normal of the wall
+					FRotator RotationToFaceWall = (-(WallHit.GetValue().Normal)).Rotation();
+					PossessingController->SetControlRotation(RotationToFaceWall);
 
-						// let the Character slide down the wall on the specified velocity
-						FVector const CurrentVelocity = CharacterMovementComponent->GetLastUpdateVelocity();
-						MovementComponent->Velocity = FVector{ CurrentVelocity.X, CurrentVelocity.Y, VelocityZWallSlide };
-					}
+					// let the Character slide down the wall on the specified velocity
+					CharacterMovementComponent->Velocity.Z = VelocityZWallSlide;
 				}
 			}
 		}
