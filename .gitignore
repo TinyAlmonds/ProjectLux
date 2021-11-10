@@ -78,10 +78,11 @@ DerivedDataCache/*
 
 ## Project specific excludes
 # Collections
-Collections/*
+Content/Collections/*
 
 # Debug symbols, logs, etc.
 Debug/*
 
 # local developer files
-Developers/*
+Content/Developers/*
+
