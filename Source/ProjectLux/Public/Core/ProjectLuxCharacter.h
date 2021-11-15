@@ -168,8 +168,8 @@ protected:
 	 */
 	virtual void SetWallSlidingFlag(bool bFlagValue);
 
-	/** Lets the Character sliding down a wall, if the wall sliding flag is True. */
-	virtual void OnWallSlidingFlagChanged();
+	/** Called, when SetWallSlidingFlag() was called. Tries to activate the WallSlide ability if wall slide flag is True; else the ability is canceled.*/
+	virtual void OnWallSlidingFlagSet();
 
 	/** Reduces/extends the space in which the Character can move.*/
 	virtual void OnMovementSpaceStateChanged();
@@ -179,6 +179,7 @@ protected:
 	void MovementSpaceStateChanged();
 
 	/** Launches the Character of the wall and rotates her towards launch direction. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
 	virtual void WallJump();
 
 	/** Dashes the Character rotates her towards dash direction. */
@@ -215,6 +216,12 @@ private:
 	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
 	USplineComponent const* MovementSplineComponentFromWorld;
+
+	/** Member holding the tag which describes the Wall Slide ability. */
+	FGameplayTag WallSlideAbilityTag;
+
+	/** Member holding the tag which describes the Wall Jump ability. */
+	FGameplayTag WallJumpAbilityTag;
 
 	/** Member holding the tag which describes the Dash ability. */
 	FGameplayTag DashAbilityTag;

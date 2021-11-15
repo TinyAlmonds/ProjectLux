@@ -16,6 +16,8 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MovementSpace{EMovementSpaceState::MovementIn3D},
 	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
 	MovementSplineComponentFromWorld{nullptr},
+	WallSlideAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide")) },
+	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
 	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))}
 {
@@ -26,6 +28,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
+	MoveBlockingAbilityTags.AddTag(WallJumpAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
 
@@ -189,22 +192,16 @@ void AProjectLuxCharacter::JumpPress()
 {
 	if (AbilitySystemComponent)
 	{
-		// block jumping when "dash or double-dash ability" is active
-		// Note: We are using the same tags as for the "move blocking", since they are the same. 
-		// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
-		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
+		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(WallJumpAbilityTag)) == false)
 		{
-			return;
-		}
-	}
-
-	if (GetWallSlidingFlag() == true)
-	{
-		WallJump();
-	}
-	else
-	{
-		Jump();
+			// block jumping when "dash/double-dash ability or wall jump" is active
+			// Note: We are using the same tags as for the "move blocking", since they are the same.
+			// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
+			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
+			{
+				Jump();
+			}
+		}		
 	}
 }
 
@@ -354,41 +351,54 @@ void AProjectLuxCharacter::SetWallSlidingFlag(bool bFlagValue)
 {
 	bWallSlidingFlag = bFlagValue;
 
-	OnWallSlidingFlagChanged();
+	OnWallSlidingFlagSet();
 }
 
-void AProjectLuxCharacter::OnWallSlidingFlagChanged()
+void AProjectLuxCharacter::OnWallSlidingFlagSet()
 {
+	FGameplayTagContainer WallSlideTags;
+	WallSlideTags.AddTag(WallSlideAbilityTag);
+
 	if (GetWallSlidingFlag() == true)
 	{
+		// activate wall slide ability, if not already activated, since the requirements are fulfilled.
 		if (AbilitySystemComponent)
 		{
-			// block wall-sliding when "dash or double-dash ability" is active
-			// Note: We are using the same tags as for the "move blocking", since they are the same.
-			// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
-			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
+			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(WallSlideTags))
 			{
-				return;
-			}
-		}
-
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-		if (CharacterMovementComponent)
-		{
-			TOptional<FHitResult> WallHit = IsTouchingWallForWallSlide();
-			if (WallHit)
-			{
-				AController* PossessingController = GetController();
-				if (PossessingController)
+				// the wall slide ability is more of a passive ability and its behavior is following here
+				// -> passive means that is interacts with other abilites, but not directly (in the Blueprint) doing anything
+				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+				if (CharacterMovementComponent)
 				{
-					// rotate Character to face towards the negated normal of the wall
-					FRotator RotationToFaceWall = (-(WallHit.GetValue().Normal)).Rotation();
-					PossessingController->SetControlRotation(RotationToFaceWall);
+					TOptional<FHitResult> WallHit = IsTouchingWallForWallSlide();
+					if (WallHit)
+					{
+						AController* PossessingController = GetController();
+						if (PossessingController)
+						{
+							// rotate Character to face towards the negated normal of the wall
+							FRotator RotationToFaceWall = (-(WallHit.GetValue().Normal)).Rotation();
+							PossessingController->SetControlRotation(RotationToFaceWall);
 
-					// let the Character slide down the wall on the specified velocity
-					CharacterMovementComponent->Velocity.Z = VelocityZWallSlide;
+							// let the Character slide down the wall on the specified velocity
+							CharacterMovementComponent->Velocity.Z = VelocityZWallSlide;
+						}
+					}
 				}
 			}
+			else
+			{
+				AbilitySystemComponent->TryActivateAbilitiesByTag(WallSlideTags);
+			}
+		}		
+	}
+	else
+	{
+		// we are not wall sliding anymore, so cancel the ability
+		if (AbilitySystemComponent)
+		{
+			AbilitySystemComponent->CancelAbilities(&WallSlideTags);
 		}
 	}
 }
