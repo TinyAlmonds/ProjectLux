@@ -28,7 +28,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
-	MoveBlockingAbilityTags.AddTag(WallJumpAbilityTag);
+	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
 	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
 
