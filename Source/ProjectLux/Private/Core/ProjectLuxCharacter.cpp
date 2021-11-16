@@ -558,7 +558,7 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
 {
 	FHitResult OutWallHit;
 	FVector LineTraceStart = GetActorLocation();
-	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f)); //TODO: increase literal to smooth wall jump -/ slide
+	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.5f));
 	FName LineTraceProfileName = FName(TEXT("IgnoreOnlyPawn"));
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
