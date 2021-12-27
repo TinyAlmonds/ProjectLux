@@ -25,6 +25,14 @@ public:
 	UProjectLuxCharacterAttributeSet();
 	virtual ~UProjectLuxCharacterAttributeSet() = default;
 
+	/**
+	 * Called just before any modification happens to an attribute.
+	 * There is no additional context provided here since anything can trigger this: Executed effects, duration based effects, effects being removed, immunity being applied, stacking rules changing, etc.
+	 * @param Attribute - The attribute whose value will be changed.
+	 * @param OutNewValue - The attributes new value. This is a mutable reference so you are able to clamp the newly applied value as well.
+	 */
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue) override;
+
 	/** Health of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
 	FGameplayAttributeData Health;
@@ -139,4 +147,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData SupriseResistance;
 	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SupriseResistance)
+
+private:
+	//TODO: add documentation
+	float ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value);
 };

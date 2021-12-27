@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectLuxCharacterAttributeSet.h"
+#include "Core/ProjectLuxCharacterAttributeSet.h"
 
 UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : 
 	Health{1.0f},
@@ -28,3 +28,23 @@ UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() :
 	SupriseDamageMultiplier{0.0f},
 	SupriseResistance{1.0f}
 {}
+
+void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue)
+{
+	Super::PreAttributeChange(Attribute, OutNewValue);
+
+	// clamp value
+	OutNewValue = ClampAttributeValue(Attribute, OutNewValue);
+}
+
+float UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
+{
+	float ClampedValue{ 0.0f };
+
+	if (Attribute == GetHealthAttribute())
+	{
+		ClampedValue = FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth());
+	}
+
+	return ClampedValue;
+}
