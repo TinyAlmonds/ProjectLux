@@ -1,4 +1,5 @@
 #include "Core/ProjectLuxCharacter.h"
+#include "Core/ProjectLuxCharacterAttributeSet.h"
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -26,6 +27,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 
 	// Construct the ASC
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	// Construct the attribute set
+	AttributeSet = CreateDefaultSubobject<UProjectLuxCharacterAttributeSet>(TEXT("AttributeSet"));
 
 	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));

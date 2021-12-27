@@ -9,6 +9,7 @@
 
 // Forward declarations
 class UAbilitySystemComponent;
+class UProjectLuxCharacterAttributeSet;
 template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
@@ -197,6 +198,10 @@ private:
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
 	UAbilitySystemComponent* AbilitySystemComponent;
+
+	/** List of attributes modified by the ability system */
+	UPROPERTY()
+	UProjectLuxCharacterAttributeSet* AttributeSet;
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	float AxisValueMoveUp;
