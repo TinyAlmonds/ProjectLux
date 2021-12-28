@@ -127,6 +127,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void DashPress();
 
+	/** Performs the attack ability when the Character has this ability. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
+	virtual void AttackPress();
+
 	/**
 	 * Returns the current value of the wall sliding flag.
 	 * @return True if the Character is wall sliding, False otherwise.

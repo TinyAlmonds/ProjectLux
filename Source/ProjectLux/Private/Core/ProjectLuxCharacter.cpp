@@ -308,6 +308,12 @@ void AProjectLuxCharacter::DashPress()
 	}
 }
 
+void AProjectLuxCharacter::AttackPress()
+{
+	//TODO: activate ability
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Attack Pressed"); // DEBUG
+}
+
 bool AProjectLuxCharacter::GetWallSlidingFlag() const
 {
 	return bWallSlidingFlag;

@@ -39,4 +39,7 @@ private:
 
 	/** Method bound to the "Dash" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void DashPress();
+
+	/** Method bound to the "Attack" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void AttackPress();
 };
