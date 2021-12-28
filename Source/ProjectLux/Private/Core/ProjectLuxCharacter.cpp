@@ -20,7 +20,8 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	WallSlideAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide")) },
 	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
-	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))}
+	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
+	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) }
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,6 +36,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
 	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
+	MoveBlockingAbilityTags.AddTag(AttackAbilityTag);
 
 	// Character Settings
 	VelocityZWallSlide = DefaultValues.VelocityZWallSlide;
@@ -119,14 +121,14 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 
 	if (AbilitySystemComponent)
 	{
-		// only allow rotation to movement input when "dash or double-dash ability" is inactive
+		// only allow rotation to movement input when "movement blocking ability" are inactive
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
 		{
 			UpdateRotationToMoveInput();
 		}
 		else
 		{
-			// stop jumping, when "dash ability" is active
+			// stop jumping, when "movement blocking abilities" are active
 			UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 			if (CharacterMovementComponent)
 			{
@@ -189,19 +191,11 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility, 1, -1, this));
 		}
 		
-		//TODO: initialize AttributeSet by an instant GameplayEffect (which does exactly this)
+		// initialize AttributeSet by an instant GameplayEffect (which does exactly this)
 		{
 			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
 			AbilitySystemComponent->ApplyGameplayEffectToSelf(AttributeSetInitEffect.GetDefaultObject(), 1.0f, EffectContext);
-			/*FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-			EffectContext.AddSourceObject(this);
-
-			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(AttributeSetInitEffect, 1.0f, EffectContext);
-			if (NewHandle.IsValid())
-			{
-				FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-			}*/
 		}
 
 	}
@@ -213,7 +207,7 @@ void AProjectLuxCharacter::JumpPress()
 	{
 		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(WallJumpAbilityTag)) == false)
 		{
-			// block jumping when "dash/double-dash ability or wall jump" is active
+			// block jumping when "movement blocking ability" are active
 			// Note: We are using the same tags as for the "move blocking", since they are the same.
 			// Note: Also this gameplay feature will be transformed into its own ability in a later feature.
 			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
@@ -235,7 +229,7 @@ void AProjectLuxCharacter::MoveRight(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "dash or double-dash ability" is active
+		// block movement when "movement blocking ability" are active
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 		{
 			return;
@@ -271,7 +265,7 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "dash or double-dash ability" is active
+		// block movement when "movement blocking ability" are active
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
 		{
 			return;
@@ -310,8 +304,10 @@ void AProjectLuxCharacter::DashPress()
 
 void AProjectLuxCharacter::AttackPress()
 {
-	//TODO: activate ability
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Attack Pressed"); // DEBUG
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackAbilityTag));
+	}
 }
 
 bool AProjectLuxCharacter::GetWallSlidingFlag() const

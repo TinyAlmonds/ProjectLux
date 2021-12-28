@@ -244,6 +244,9 @@ private:
 	/** Member holding the tag which describes the Double-Dash ability. */
 	FGameplayTag DoubleDashAbilityTag;
 
+	/** Member holding the tag which describes the Attack ability. */
+	FGameplayTag AttackAbilityTag;
+
 	/** Member holding the tags of abilities blocking the MoveRight-/Up input. */
 	FGameplayTagContainer MoveBlockingAbilityTags;
 
