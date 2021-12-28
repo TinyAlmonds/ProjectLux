@@ -8,6 +8,8 @@
 #include "ProjectLuxCharacter.generated.h"
 
 // Forward declarations
+class UGameplayAbility;
+class UGameplayEffect;
 class UAbilitySystemComponent;
 class UProjectLuxCharacterAttributeSet;
 template<typename OptionalType>
@@ -74,7 +76,11 @@ public:
 	
 	/** Default GameplayAbilities for this character. These will be removed and added again on character possession. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
-	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+
+	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
+	TSubclassOf<UGameplayEffect> AttributeSetInitEffect;
 
 	/** Sets default values for this character's properties */
 	AProjectLuxCharacter();
