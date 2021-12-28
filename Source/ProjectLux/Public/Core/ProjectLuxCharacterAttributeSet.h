@@ -14,6 +14,10 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+// Forward declarations
+template<typename OptionalType>
+struct TOptional;
+
 /**
  * Class holding all attributes needed for the abilities of the AProjectLuxCharacter.
  */
@@ -26,12 +30,17 @@ public:
 	virtual ~UProjectLuxCharacterAttributeSet() = default;
 
 	/**
-	 * Called just before any modification happens to an attribute.
-	 * There is no additional context provided here since anything can trigger this: Executed effects, duration based effects, effects being removed, immunity being applied, stacking rules changing, etc.
+	 * Called just before any modification happens to an attribute. There is no additional context provided here since anything can trigger this: Executed effects, duration based effects, effects being removed, immunity being applied, stacking rules changing, etc.
 	 * @param Attribute - The attribute whose value will be changed.
-	 * @param OutNewValue - The attributes new value. This is a mutable reference so you are able to clamp the newly applied value as well.
+	 * @param OutNewValue - The attribute's new value. This is a mutable reference so you are able to clamp the newly applied value as well.
 	 */
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue) override;
+
+	/**
+	 * Called just before a GameplayEffect is executed to modify the base value of an attribute. No more changes can be made. Note: This is only called during an 'execute'. E.g., a modification to the 'base value' of an attribute. It is not called during an application of a GameplayEffect, such as a 5 ssecond +10 movement speed buff.
+	 * @param Data - Data struct holding necessary information of the executed/applied GameplayEffect.
+	*/
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	/** Health of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
@@ -149,6 +158,11 @@ public:
 	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SupriseResistance)
 
 private:
-	//TODO: add documentation
-	float ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value);
+	/**
+	 * Clamps the passed value of the passed attribute.
+	 * @param Attribute - The attribute whose value should be clamped.
+	 * @param Value - The attribute's value to clamp.
+	 * @return An Optional with the clamped value, if the attribute is known to this AttributeSet; else an empty Optional.
+	 */
+	TOptional<float> ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value);
 };
