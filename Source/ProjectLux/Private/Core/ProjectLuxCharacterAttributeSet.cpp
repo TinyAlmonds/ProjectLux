@@ -2,6 +2,7 @@
 
 
 #include "Core/ProjectLuxCharacterAttributeSet.h"
+#include "Misc/Optional.h"
 
 UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : 
 	Health{1.0f},
@@ -34,17 +35,65 @@ void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribu
 	Super::PreAttributeChange(Attribute, OutNewValue);
 
 	// clamp value
-	OutNewValue = ClampAttributeValue(Attribute, OutNewValue);
+	{
+		TOptional<float> ClampedValue = ClampAttributeValue(Attribute, OutNewValue);
+		if (ClampedValue)
+		{
+			OutNewValue = ClampedValue.GetValue();
+		}
+	}
 }
 
-float UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
+void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	float ClampedValue{ 0.0f };
+	Super::PostGameplayEffectExecute(Data);
 
+	// TODO: react to base value changes (was not necessary for the initialization process)
+	// TODO: clamp value changes
+}
+
+TOptional<float> UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
+{
 	if (Attribute == GetHealthAttribute())
-	{
-		ClampedValue = FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth());
+	{		
+		return TOptional<float>{FMath::Clamp(Value, 0.0f, GetMaxHealth())};
 	}
-
-	return ClampedValue;
+	else if (Attribute == GetMaxHealthAttribute())
+	{
+		return TOptional<float>{FMath::Max(1.0f, Value)};
+	}
+	else if (Attribute == GetRawDamageAttribute())
+	{
+		return TOptional<float>{FMath::Max(0.0f, Value)};
+	}
+	else if (Attribute == GetArmorAttribute())
+	{
+		return TOptional<float>{FMath::Max(0.0f, Value)};
+	}
+	else if (Attribute.AttributeName.Contains(FString("Resistance")))
+	{
+		if ((Attribute == GetMinEmotionalResistanceAttribute()) || (Attribute == GetMaxEmotionalResistanceAttribute()))
+		{
+			return TOptional<float>{FMath::Clamp(Value, 0.0f, 1.0f)};
+		}
+		else
+		{
+			return TOptional<float>{FMath::Clamp(Value, GetMinEmotionalResistance(), GetMaxEmotionalResistance())};
+		}
+	}
+	else if (Attribute.AttributeName.Contains(FString("DamageMultiplier")))
+	{
+		if (Attribute == GetMinEmotionalDamageMultiplierAttribute())
+		{
+			return TOptional<float>{FMath::Max(0.0f, Value)};
+		}
+		else
+		{
+			return TOptional<float>{FMath::Max(GetMinEmotionalDamageMultiplier(), Value)};
+		}
+	}
+	else
+	{
+		return TOptional<float>{};
+	}
 }
