@@ -36,7 +36,6 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
 	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
-	MoveBlockingAbilityTags.AddTag(AttackAbilityTag);
 
 	// Character Settings
 	VelocityZWallSlide = DefaultValues.VelocityZWallSlide;
@@ -304,9 +303,24 @@ void AProjectLuxCharacter::DashPress()
 
 void AProjectLuxCharacter::AttackPress()
 {
-	if (AbilitySystemComponent)
+	if (AbilitySystemComponent) 
 	{
-		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackAbilityTag));
+		// try to set up combo if attack ability is active and the AnimNotify enabled the combo; else activate the abiltiy
+		if (AbilitySystemComponent->HasMatchingGameplayTag(AttackAbilityTag))
+		{
+			if (bAttackAbilityComboEnabled)
+			{
+				UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+				if (AnimInstance)
+				{
+					AnimInstance->Montage_JumpToSection(AttackAbilityNextSectionCombo, AnimInstance->GetCurrentActiveMontage());
+				}
+			}
+		}
+		else
+		{
+			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackAbilityTag));
+		}
 	}
 }
 
@@ -338,6 +352,17 @@ void AProjectLuxCharacter::SetMovementSpline(USplineComponent const* MovementSpl
 	MovementSplineComponentFromWorld = MovementSplineComponent;
 }
 
+void AProjectLuxCharacter::ActivateAttackAbilityCombo(FName ComboNextSectionName)
+{
+	bAttackAbilityComboEnabled = true;
+	AttackAbilityNextSectionCombo = ComboNextSectionName;
+}
+
+void AProjectLuxCharacter::DeactivateAttackAbilityCombo()
+{
+	bAttackAbilityComboEnabled = false;
+	AttackAbilityNextSectionCombo = "COMBODEACTIVATED";
+}
 
 void AProjectLuxCharacter::BeginPlay()
 {
