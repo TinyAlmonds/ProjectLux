@@ -166,6 +166,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void SetMovementSpline(USplineComponent const* MovementSplineComponent);
 
+	/**
+	 * Activates the combo for the attack ability of the Character.
+	 * @param ComboNextSectionName - The name of the next section in the AnimMontage of the attack ability.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
+	virtual void ActivateAttackAbilityCombo(FName ComboNextSectionName);
+
+	/** Deactivates the combo for the attack ability of the Character.  */
+	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
+	virtual void DeactivateAttackAbilityCombo();
+
 protected:
 	/** Called when the game starts or when spawned. */
 	virtual void BeginPlay() override;
@@ -249,6 +260,12 @@ private:
 
 	/** Member holding the tags of abilities blocking the MoveRight-/Up input. */
 	FGameplayTagContainer MoveBlockingAbilityTags;
+
+	/** Flag indicating whether the AnimMontage of the attack ability is in a combo interval/window. If so the flag is True; otherwise False.*/
+	bool bAttackAbilityComboEnabled;
+
+	/** The name of the next section in the AnimMontage of the attack ability. */
+	FName AttackAbilityNextSectionCombo;
 
 	/**
 	 * Checks, whether the Character touches a wall for the wall slide.
