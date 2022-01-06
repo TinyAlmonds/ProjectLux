@@ -27,7 +27,8 @@ UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() :
 	AnticipationDamageMultiplier{0.0f},
 	AnticipationResistance{1.0f},
 	SupriseDamageMultiplier{0.0f},
-	SupriseResistance{1.0f}
+	SupriseResistance{1.0f},
+	ReceivedDamage{0.0f}
 {}
 
 void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue)
