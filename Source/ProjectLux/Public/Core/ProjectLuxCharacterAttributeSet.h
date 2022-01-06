@@ -157,6 +157,11 @@ public:
 	FGameplayAttributeData SupriseResistance;
 	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SupriseResistance)
 
+	/** Temporary/Meta attribute used by the ProjectLuxAttackDamageExecution to hold the final calculated damage the character will receive.*/
+	UPROPERTY(BlueprintReadOnly, Category = "Misc")
+	FGameplayAttributeData ReceivedDamage;
+	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, ReceivedDamage)
+
 private:
 	/**
 	 * Clamps the passed value of the passed attribute.
