@@ -2,6 +2,7 @@
 
 
 #include "Core/ProjectLuxCharacterAttributeSet.h"
+#include "GameplayEffectExtension.h"
 #include "Misc/Optional.h"
 
 UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : 
@@ -49,14 +50,27 @@ void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	// TODO: react to base value changes (was not necessary for the initialization process)
-	// TODO: clamp value changes
+	if (Data.EvaluatedData.Attribute == GetReceivedDamageAttribute())
+	{		
+		// store a local copy of the amount of damage received and consume the damage
+		const float DamageReceivedTmp = GetReceivedDamage();
+		SetReceivedDamage(0.0f);
+		if (DamageReceivedTmp > 0.0f)
+		{
+			// calculate health after damage received, clamp it and apply it
+			TOptional<float> HealthAfterDamage{ClampAttributeValue(GetHealthAttribute(), GetHealth() - DamageReceivedTmp)};
+			if (HealthAfterDamage)
+			{
+				SetHealth(HealthAfterDamage.GetValue());
+			}
+		}
+	}
 }
 
 TOptional<float> UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
 {
 	if (Attribute == GetHealthAttribute())
-	{		
+	{
 		return TOptional<float>{FMath::Clamp(Value, 0.0f, GetMaxHealth())};
 	}
 	else if (Attribute == GetMaxHealthAttribute())

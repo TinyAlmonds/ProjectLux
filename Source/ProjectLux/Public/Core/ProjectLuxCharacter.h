@@ -7,11 +7,13 @@
 #include "GameplayTagContainer.h"
 #include "ProjectLuxCharacter.generated.h"
 
+
 // Forward declarations
 class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UProjectLuxCharacterAttributeSet;
+struct FOnAttributeChangeData;
 template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
@@ -197,7 +199,7 @@ protected:
 	virtual void OnMovementSpaceStateChanged();
 
 	/** Event for the Blueprint class to react on MovementSpaceState changes.*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Movement", DisplayName = "OnMovementSpaceStateChanged")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Movement", DisplayName = "On MovementSpaceState Changed")
 	void MovementSpaceStateChanged();
 
 	/** Launches the Character of the wall and rotates her towards launch direction. */
@@ -211,6 +213,13 @@ protected:
 	/** Stops the dash of the Character. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
 	virtual void StopDash();
+
+	/** Reacts to Health attribute changes and calls the Blueprint event.*/
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
+
+	/** Event for the Blueprint class to react to Health changes of the AttributeSet.*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Attributes", DisplayName = "On Health Changed")
+	void HealthChanged(float OldValue, float NewValue);
 
 private:
 	/** The default values for various members of this Character. */
