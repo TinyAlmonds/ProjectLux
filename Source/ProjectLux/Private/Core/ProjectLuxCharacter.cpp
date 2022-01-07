@@ -6,6 +6,7 @@
 #include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayEffectTypes.h"
 #include "Math/UnrealMathUtility.h"
 #include "Misc/Optional.h"
 
@@ -197,6 +198,8 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 			AbilitySystemComponent->ApplyGameplayEffectToSelf(AttributeSetInitEffect.GetDefaultObject(), 1.0f, EffectContext);
 		}
 
+		// add delegates to attribute changes
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxCharacter::OnHealthChanged);
 	}
 }
 
@@ -598,6 +601,11 @@ void AProjectLuxCharacter::StopDash()
 		CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
 		CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
 	}
+}
+
+void AProjectLuxCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	HealthChanged(Data.OldValue, Data.NewValue);
 }
 
 TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
