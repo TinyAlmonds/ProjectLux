@@ -297,7 +297,20 @@ void AProjectLuxCharacter::DashPress()
 {
 	if (AbilitySystemComponent)
 	{
-		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
+		// enable canceling of active Dash abilities to allow shorter dashes
+		if (AbilitySystemComponent->HasMatchingGameplayTag(DashAbilityTag))
+		{
+			FGameplayTagContainer DashAbilityTags(DashAbilityTag);
+			AbilitySystemComponent->CancelAbilities(&DashAbilityTags);
+		}
+		else if (AbilitySystemComponent->HasMatchingGameplayTag(DoubleDashAbilityTag))
+		{
+			FGameplayTagContainer DoubleDashAbilityTags(DoubleDashAbilityTag);
+			AbilitySystemComponent->CancelAbilities(&DoubleDashAbilityTags);
+		}
+
+		// activate Dash if possible, else try to use the DoubleDash
+		if(AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
 		{
 			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DoubleDashAbilityTag));
 		}
