@@ -395,7 +395,14 @@ void AProjectLuxCharacter::UpdateWallSlidingFlag()
 		{
 			if (IsTouchingWallForWallSlide())
 			{
-				SetWallSlidingFlag(true);
+				if (CharacterMovementComponent->Velocity.Z <= 0.0f)
+				{
+					SetWallSlidingFlag(true);
+				}
+				else
+				{
+					SetWallSlidingFlag(false);
+				}
 			}
 			else
 			{
