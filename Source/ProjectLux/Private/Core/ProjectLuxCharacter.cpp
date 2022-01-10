@@ -231,8 +231,8 @@ void AProjectLuxCharacter::MoveRight(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "movement blocking ability" are active
-		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
+		// block movement when "movement blocking ability" are active or we are wall sliding
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
 		{
 			return;
 		}
@@ -267,8 +267,8 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 
 	if (AbilitySystemComponent)
 	{
-		// block movement when "movement blocking ability" are active
-		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags))
+		// block movement when "movement blocking ability" are active or we are wall sliding
+		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
 		{
 			return;
 		}
@@ -433,19 +433,15 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 				if (CharacterMovementComponent)
 				{
-					TOptional<FHitResult> WallHit = IsTouchingWallForWallSlide();
-					if (WallHit)
+					AController* PossessingController = GetController();
+					if (PossessingController)
 					{
-						AController* PossessingController = GetController();
-						if (PossessingController)
-						{
-							// rotate Character to face towards the negated normal of the wall
-							FRotator RotationToFaceWall = (-(WallHit.GetValue().Normal)).Rotation();
-							PossessingController->SetControlRotation(RotationToFaceWall);
+						// rotate Character to face towards the negated normal of the wall
+						FRotator RotationToFaceWall = (-(LastValidWallSlideHitResult.Normal)).Rotation();
+						PossessingController->SetControlRotation(RotationToFaceWall);
 
-							// let the Character slide down the wall on the specified velocity
-							CharacterMovementComponent->Velocity.Z = VelocityZWallSlide;
-						}
+						// let the Character slide down the wall on the specified velocity
+						CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, VelocityZWallSlide);
 					}
 				}
 			}
@@ -621,7 +617,7 @@ void AProjectLuxCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
 	HealthChanged(Data.OldValue, Data.NewValue);
 }
 
-TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
+TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
 {
 	FHitResult OutWallHit;
 	FVector LineTraceStart = GetActorLocation();
@@ -632,9 +628,9 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide() const
 
 	if (GetWorld()->LineTraceSingleByProfile(OutWallHit, LineTraceStart, LineTraceEnd, LineTraceProfileName, CollisionParams))
 	{
+		LastValidWallSlideHitResult = OutWallHit;
 		return TOptional<FHitResult>{OutWallHit};
 	}
-
 	return TOptional<FHitResult>{};
 }
 
@@ -656,14 +652,14 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 			if (AxisValueMoveRight != 0.0f)
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
-				PossessingController->SetControlRotation(DesiredRotationFromInput);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
 			}
 			break;
 		case EMovementSpaceState::MovementIn3D:
 			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
-				PossessingController->SetControlRotation(DesiredRotationFromInput);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
 			}
 			break;
 		case EMovementSpaceState::MovementOnSpline:
@@ -680,7 +676,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}
 				DesiredRotationFromInput = FRotator(0.0f, ClosestWorldRotationOnSpline.Yaw, 0.0f);
-				PossessingController->SetControlRotation(DesiredRotationFromInput);
+				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
 			}
 			break;
 		default:
