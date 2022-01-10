@@ -50,7 +50,7 @@ struct FProjectLuxCharacterDefaultValues
 	float CharacterMovementComponentAirControl{ 1.0f };
 	float CharacterMovementComponentAirControlBoostMultiplier{ 0.0f };
 	float CharacterMovementComponentAirControlBoostVelocityThreshold{ 0.0f };
-	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 360.0f, 0.0f);
+	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 30.0f, 0.0f);
 };
 
 
@@ -276,11 +276,14 @@ private:
 	/** The name of the next section in the AnimMontage of the attack ability. */
 	FName AttackAbilityNextSectionCombo;
 
+	/** FHitResult of the last valid IsTouchingWallForWallSlide() method call. Only use it when the Character is wall sliding.*/
+	FHitResult LastValidWallSlideHitResult;
+
 	/**
 	 * Checks, whether the Character touches a wall for the wall slide.
 	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
 	 */
-	TOptional<FHitResult> IsTouchingWallForWallSlide() const;
+	TOptional<FHitResult> IsTouchingWallForWallSlide();
 
 	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
 	void UpdateRotationToMoveInput();
