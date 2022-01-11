@@ -1,0 +1,6 @@
+AttributeName,1
+MaxWalkSpeed,600.0
+JumpZVelocity,1000.0
+VelocityMultiplierDash,3.0
+VelocityXYMultiplierWallJump,1.8
+VelocityZMultiplierWallJump,1.8
