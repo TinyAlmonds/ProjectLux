@@ -38,15 +38,10 @@ struct FProjectLuxCharacterDefaultValues
 	FProjectLuxCharacterDefaultValues() {};
 
 	float VelocityZWallSlide{ -180.0f };
-	float VelocityXYMultiplierWallJump{ 1.8f };
-	float VelocityZMultiplierWallJump{ 1.8f };
-	float VelocityMultiplierDash{ 3.0f };
 	float CharacterJumpMaxHoldTime{ 0.35f };
 	float CharacterMovementComponentGravityScale{ 5.5f };
 	float CharacterMovementComponentMaxAcceleration{ 8192.0f };
-	float CharacterMovementComponentMaxWalkSpeed{ 600.0f };
 	float CharacterMovementComponentGroundFriction{ 8.0f };
-	float CharacterMovementComponentJumpZVelocity{ 1000.0f };
 	float CharacterMovementComponentBrakingDecelerationFalling{ 2048.0f };
 	float CharacterMovementComponentAirControl{ 1.0f };
 	float CharacterMovementComponentAirControlBoostMultiplier{ 0.0f };
@@ -61,21 +56,12 @@ class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySy
 	GENERATED_BODY()
 
 public:
+	/** Maximum falling velocity of the Character (three times the value of the MaxWalkSpeed) (range: <0.0 [uu/s]). */
+	static constexpr float MaxFallVelocity{ -3.0f * 600.0f };
+
 	/** Velocity in z-direction, when the Character is sliding down a wall (range: <0.0 [uu/s]). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMax = "0.0"))
 	float VelocityZWallSlide;
-
-	/** Scales the Velocity (MaxWalkSpeed of the CharacterMovementComponent) in x/y-direction when the Character performs a WallJump (range: >0.0 [uu/s]). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
-	float VelocityXYMultiplierWallJump;
-
-	/** Scales the Velocity (JumpZVelocity of the CharacterMovementComponent) in z-direction when the Character performs a WallJump (range: >0.0 [uu/s]). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
-	float VelocityZMultiplierWallJump;
-
-	/** Scales the Velocity (MaxWalkSpeed of the CharacterMovementComponent) when the Character performs a Dash (range: >0.0 [uu/s]). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMin = "0.0"))
-	float VelocityMultiplierDash;
 	
 	/** Default GameplayAbilities for this character. These will be removed and added again on character possession. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
