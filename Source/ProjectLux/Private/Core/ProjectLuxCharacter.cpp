@@ -1,5 +1,5 @@
 #include "Core/ProjectLuxCharacter.h"
-#include "Core/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
