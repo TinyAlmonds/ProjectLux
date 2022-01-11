@@ -42,9 +42,6 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 
 	// Character Settings
 	VelocityZWallSlide = DefaultValues.VelocityZWallSlide;
-	VelocityXYMultiplierWallJump = DefaultValues.VelocityXYMultiplierWallJump;
-	VelocityZMultiplierWallJump = DefaultValues.VelocityZMultiplierWallJump;
-	VelocityMultiplierDash = DefaultValues.VelocityMultiplierDash;
 	JumpMaxHoldTime = DefaultValues.CharacterJumpMaxHoldTime;
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
@@ -55,11 +52,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 		CharacterMovementComponent->MaxAcceleration = DefaultValues.CharacterMovementComponentMaxAcceleration;
 
 		// Walking Settings
-		CharacterMovementComponent->MaxWalkSpeed = DefaultValues.CharacterMovementComponentMaxWalkSpeed;
 		CharacterMovementComponent->GroundFriction = DefaultValues.CharacterMovementComponentGroundFriction;
 
 		// Jumping/Falling Settings
-		CharacterMovementComponent->JumpZVelocity = DefaultValues.CharacterMovementComponentJumpZVelocity;
 		CharacterMovementComponent->BrakingDecelerationFalling = DefaultValues.CharacterMovementComponentBrakingDecelerationFalling;
 		CharacterMovementComponent->AirControl = DefaultValues.CharacterMovementComponentAirControl;
 		CharacterMovementComponent->AirControlBoostMultiplier = DefaultValues.CharacterMovementComponentAirControlBoostMultiplier;
@@ -77,9 +72,6 @@ void AProjectLuxCharacter::PostInitProperties()
 	// Update default values with properties
 	// Character Settings
 	DefaultValues.VelocityZWallSlide = VelocityZWallSlide;
-	DefaultValues.VelocityXYMultiplierWallJump = VelocityXYMultiplierWallJump;
-	DefaultValues.VelocityZMultiplierWallJump= VelocityZMultiplierWallJump;
-	DefaultValues.VelocityMultiplierDash = VelocityMultiplierDash;
 	DefaultValues.CharacterJumpMaxHoldTime = JumpMaxHoldTime;
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
@@ -90,11 +82,9 @@ void AProjectLuxCharacter::PostInitProperties()
 		DefaultValues.CharacterMovementComponentMaxAcceleration = CharacterMovementComponent->MaxAcceleration;
 
 		// Walking Settings
-		DefaultValues.CharacterMovementComponentMaxWalkSpeed = CharacterMovementComponent->MaxWalkSpeed;
 		DefaultValues.CharacterMovementComponentGroundFriction = CharacterMovementComponent->GroundFriction;
 
 		// Jumping/Falling Settings
-		DefaultValues.CharacterMovementComponentJumpZVelocity = CharacterMovementComponent->JumpZVelocity;
 		DefaultValues.CharacterMovementComponentBrakingDecelerationFalling = CharacterMovementComponent->BrakingDecelerationFalling;
 		DefaultValues.CharacterMovementComponentAirControl = CharacterMovementComponent->AirControl;
 		DefaultValues.CharacterMovementComponentAirControlBoostMultiplier = CharacterMovementComponent->AirControlBoostMultiplier;
@@ -167,7 +157,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		if (CharacterMovementComponent)
 		{
 			FVector CharacterVelocity = CharacterMovementComponent->Velocity;
-			CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, -CharacterMovementComponent->MaxWalkSpeed * VelocityMultiplierDash / 1.0f) : CharacterVelocity.Z;
+			CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, MaxFallVelocity) : CharacterVelocity.Z;
 			CharacterMovementComponent->Velocity = CharacterVelocity;
 		}
 	}
@@ -211,9 +201,6 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxCharacter::OnHealthChanged);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetMaxWalkSpeedAttribute()).AddUObject(this, &AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetJumpZVelocityAttribute()).AddUObject(this, &AProjectLuxCharacter::OnJumpZVelocityAttributeChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityMultiplierDashAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityMultiplierDashAttributeChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityXYMultiplierWallJumpAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityXYMultiplierWallJumpAttributeChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityZMultiplierWallJumpAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityZMultiplierWallJumpAttributeChanged);
 
 		// initialize values which use the Attributes from the related AttributeSet		
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
@@ -222,9 +209,6 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 			CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMaxWalkSpeed();
 			CharacterMovementComponent->JumpZVelocity = MovementAttributeSet->GetJumpZVelocity();
 		}
-		VelocityMultiplierDash = MovementAttributeSet->GetVelocityMultiplierDash();
-		VelocityXYMultiplierWallJump = MovementAttributeSet->GetVelocityXYMultiplierWallJump();
-		VelocityZMultiplierWallJump = MovementAttributeSet->GetVelocityZMultiplierWallJump();
 	}
 }
 
@@ -549,8 +533,8 @@ void AProjectLuxCharacter::WallJump()
 	{
 		// Launch Character in opposite direction of its Forward Vector with the specified velocity
 		FVector LaunchDirection = -GetActorForwardVector();
-		FVector LaunchVelocity = LaunchDirection * (CharacterMovementComponent->MaxWalkSpeed * VelocityXYMultiplierWallJump);
-		LaunchVelocity.Z = CharacterMovementComponent->JumpZVelocity * VelocityZMultiplierWallJump;
+		FVector LaunchVelocity = LaunchDirection * (CharacterMovementComponent->MaxWalkSpeed * MovementAttributeSet->GetVelocityXYMultiplierWallJump());
+		LaunchVelocity.Z = CharacterMovementComponent->JumpZVelocity * MovementAttributeSet->GetVelocityZMultiplierWallJump();
 
 		LaunchCharacter(LaunchVelocity, false, true);
 
@@ -624,7 +608,7 @@ void AProjectLuxCharacter::Dash()
 		CharacterMovementComponent->GravityScale = 0.0f;
 
 		// perform the dash in the direction of its velocity vector
-		FVector DashVelocityDirection = DashDirection * (CharacterMovementComponent->MaxWalkSpeed * VelocityMultiplierDash);
+		FVector DashVelocityDirection = DashDirection * (CharacterMovementComponent->MaxWalkSpeed * MovementAttributeSet->GetVelocityMultiplierDash());
 		LaunchCharacter(DashVelocityDirection, true, true);
 
 		// rotate Character to dash direction but only around Yaw axis
@@ -665,21 +649,6 @@ void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(const FOnAttributeCha
 	{
 		CharacterMovementComponent->JumpZVelocity = Data.NewValue;
 	}
-}
-
-void AProjectLuxCharacter::OnVelocityMultiplierDashAttributeChanged(const FOnAttributeChangeData& Data)
-{
-	VelocityMultiplierDash = Data.NewValue;
-}
-
-void AProjectLuxCharacter::OnVelocityXYMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data)
-{
-	VelocityXYMultiplierWallJump = Data.NewValue;
-}
-
-void AProjectLuxCharacter::OnVelocityZMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data)
-{
-	VelocityZMultiplierWallJump = Data.NewValue;
 }
 
 TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
