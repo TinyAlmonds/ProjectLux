@@ -226,6 +226,21 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Attributes", DisplayName = "On Health Changed")
 	void HealthChanged(float OldValue, float NewValue);
 
+	/** Reacts to MaxWalkSpeed attribute changes.*/
+	void OnMaxWalkSpeedAttributeChanged(const FOnAttributeChangeData& Data);
+
+	/** Reacts to JumpZVelocity attribute changes.*/
+	void OnJumpZVelocityAttributeChanged(const FOnAttributeChangeData& Data);
+
+	/** Reacts to VelocityMultiplierDash attribute changes.*/
+	void OnVelocityMultiplierDashAttributeChanged(const FOnAttributeChangeData& Data);
+
+	/** Reacts to VelocityXYMultiplierWallJump attribute changes.*/
+	void OnVelocityXYMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data);
+
+	/** Reacts to VelocityZMultiplierWallJump attribute changes.*/
+	void OnVelocityZMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data);
+
 private:
 	/** The default values for various members of this Character. */
 	FProjectLuxCharacterDefaultValues DefaultValues;
