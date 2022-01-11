@@ -1,8 +1,8 @@
 // Copyright TinyAlmonds (Alex Nördemann)
 
 
-#include "Core/ProjectLuxAttackDamageExecution.h"
-#include "Core/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/ProjectLuxAttackDamageExecution.h"
+#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffect.h"
 #include "GenericPlatform/GenericPlatformMath.h"
