@@ -209,6 +209,22 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 
 		// add delegates to attribute changes
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxCharacter::OnHealthChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetMaxWalkSpeedAttribute()).AddUObject(this, &AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetJumpZVelocityAttribute()).AddUObject(this, &AProjectLuxCharacter::OnJumpZVelocityAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityMultiplierDashAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityMultiplierDashAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityXYMultiplierWallJumpAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityXYMultiplierWallJumpAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetVelocityZMultiplierWallJumpAttribute()).AddUObject(this, &AProjectLuxCharacter::OnVelocityZMultiplierWallJumpAttributeChanged);
+
+		// initialize values which use the Attributes from the related AttributeSet		
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMaxWalkSpeed();
+			CharacterMovementComponent->JumpZVelocity = MovementAttributeSet->GetJumpZVelocity();
+		}
+		VelocityMultiplierDash = MovementAttributeSet->GetVelocityMultiplierDash();
+		VelocityXYMultiplierWallJump = MovementAttributeSet->GetVelocityXYMultiplierWallJump();
+		VelocityZMultiplierWallJump = MovementAttributeSet->GetVelocityZMultiplierWallJump();
 	}
 }
 
@@ -391,7 +407,7 @@ void AProjectLuxCharacter::DeactivateAttackAbilityCombo()
 
 void AProjectLuxCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	
 }
 
 void AProjectLuxCharacter::UpdateWallSlidingFlag()
@@ -631,6 +647,39 @@ void AProjectLuxCharacter::StopDash()
 void AProjectLuxCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
 	HealthChanged(Data.OldValue, Data.NewValue);
+}
+
+void AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = Data.NewValue;
+	}
+}
+
+void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->JumpZVelocity = Data.NewValue;
+	}
+}
+
+void AProjectLuxCharacter::OnVelocityMultiplierDashAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	VelocityMultiplierDash = Data.NewValue;
+}
+
+void AProjectLuxCharacter::OnVelocityXYMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	VelocityXYMultiplierWallJump = Data.NewValue;
+}
+
+void AProjectLuxCharacter::OnVelocityZMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	VelocityZMultiplierWallJump = Data.NewValue;
 }
 
 TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
