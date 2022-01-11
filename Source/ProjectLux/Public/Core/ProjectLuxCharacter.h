@@ -13,6 +13,7 @@ class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UProjectLuxCharacterAttributeSet;
+class UProjectLuxMovementAttributeSet;
 struct FOnAttributeChangeData;
 template<typename OptionalType>
 struct TOptional;
@@ -83,6 +84,10 @@ public:
 	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TSubclassOf<UGameplayEffect> AttributeSetInitEffect;
+
+	/** GameplayEffect which is used to initialize the movement related AttributeSet of the character. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
+	TSubclassOf<UGameplayEffect> MovementAttributeSetInitEffect;
 
 	/** Sets default values for this character's properties */
 	AProjectLuxCharacter();
@@ -232,6 +237,10 @@ private:
 	/** List of attributes modified by the ability system */
 	UPROPERTY()
 	UProjectLuxCharacterAttributeSet* AttributeSet;
+
+	/** List of movement related attributes modified by the ability system */
+	UPROPERTY()
+	UProjectLuxMovementAttributeSet* MovementAttributeSet;
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	float AxisValueMoveUp;

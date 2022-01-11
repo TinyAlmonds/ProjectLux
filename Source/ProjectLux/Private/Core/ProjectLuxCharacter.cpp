@@ -1,5 +1,6 @@
 #include "Core/ProjectLuxCharacter.h"
 #include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -30,8 +31,9 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	// Construct the ASC
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
-	// Construct the attribute set
+	// Construct the attribute sets
 	AttributeSet = CreateDefaultSubobject<UProjectLuxCharacterAttributeSet>(TEXT("AttributeSet"));
+	MovementAttributeSet = CreateDefaultSubobject<UProjectLuxMovementAttributeSet>(TEXT("MovementAttributeSet"));
 
 	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
@@ -196,6 +198,13 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
 			AbilitySystemComponent->ApplyGameplayEffectToSelf(AttributeSetInitEffect.GetDefaultObject(), 1.0f, EffectContext);
+		}
+
+		// initialize movement related AttributeSet by an instant GameplayEffect (which does exactly this)
+		{
+			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+			AbilitySystemComponent->ApplyGameplayEffectToSelf(MovementAttributeSetInitEffect.GetDefaultObject(), 1.0f, EffectContext);
 		}
 
 		// add delegates to attribute changes
