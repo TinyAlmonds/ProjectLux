@@ -227,6 +227,17 @@ protected:
 	/** Reacts to VelocityZMultiplierWallJump attribute changes.*/
 	void OnVelocityZMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data);
 
+	/**
+	 * Reacts to changes of the ASC, when the "Status.Dead" tag is applied or removed.
+	 * @param Unused. Only for interface call.
+	 * @param NewCount - The new count of this tag.
+	 */
+	virtual void DeadTagChanged(const FGameplayTag, int32 NewCount);
+
+	/** Event for the Blueprint class to react to character death.*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", DisplayName = "On Died")
+	void Died();
+
 private:
 	/** The default values for various members of this Character. */
 	FProjectLuxCharacterDefaultValues DefaultValues;
@@ -279,6 +290,9 @@ private:
 
 	/** Member holding the tags of abilities blocking the MoveRight-/Up input. */
 	FGameplayTagContainer MoveBlockingAbilityTags;
+
+	/** Member holding the tag which describes the death of the character. */
+	FGameplayTag DeadTag;
 
 	/** Flag indicating whether the AnimMontage of the attack ability is in a combo interval/window. If so the flag is True; otherwise False.*/
 	bool bAttackAbilityComboEnabled;
