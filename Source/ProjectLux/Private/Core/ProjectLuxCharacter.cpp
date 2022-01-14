@@ -23,7 +23,8 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
 	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
-	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) }
+	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) },
+	DeadTag{ FGameplayTag::RequestGameplayTag(FName("Status.Dead")) }
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -201,6 +202,9 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxCharacter::OnHealthChanged);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetMaxWalkSpeedAttribute()).AddUObject(this, &AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetJumpZVelocityAttribute()).AddUObject(this, &AProjectLuxCharacter::OnJumpZVelocityAttributeChanged);
+
+		// add delegates to GameplayTag changes
+		AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AProjectLuxCharacter::DeadTagChanged);
 
 		// initialize values which use the Attributes from the related AttributeSet		
 		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
@@ -648,6 +652,15 @@ void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(const FOnAttributeCha
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->JumpZVelocity = Data.NewValue;
+	}
+}
+
+void AProjectLuxCharacter::DeadTagChanged(const FGameplayTag, int32 NewCount)
+{
+	// signal character death on tag application
+	if (NewCount == 1)
+	{
+		Died();
 	}
 }
 
