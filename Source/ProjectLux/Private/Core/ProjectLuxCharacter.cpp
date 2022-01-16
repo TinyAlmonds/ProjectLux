@@ -1,4 +1,5 @@
 #include "Core/ProjectLuxCharacter.h"
+#include "Core/ProjectLuxPlayerController.h"
 #include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
 #include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
 #include "Abilities/GameplayAbility.h"
@@ -172,6 +173,15 @@ UAbilitySystemComponent* AProjectLuxCharacter::GetAbilitySystemComponent() const
 void AProjectLuxCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	
+	// set the view target of the controller
+	{
+		AProjectLuxPlayerController* PossessingController = Cast<AProjectLuxPlayerController>(NewController);
+		if (PossessingController)
+		{
+			PossessingController->SetViewTarget(this);
+		}
+	}
 
 	if (AbilitySystemComponent)
 	{
