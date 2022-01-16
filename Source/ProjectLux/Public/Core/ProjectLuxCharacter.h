@@ -224,15 +224,6 @@ protected:
 	/** Reacts to JumpZVelocity attribute changes.*/
 	void OnJumpZVelocityAttributeChanged(const FOnAttributeChangeData& Data);
 
-	/** Reacts to VelocityMultiplierDash attribute changes.*/
-	void OnVelocityMultiplierDashAttributeChanged(const FOnAttributeChangeData& Data);
-
-	/** Reacts to VelocityXYMultiplierWallJump attribute changes.*/
-	void OnVelocityXYMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data);
-
-	/** Reacts to VelocityZMultiplierWallJump attribute changes.*/
-	void OnVelocityZMultiplierWallJumpAttributeChanged(const FOnAttributeChangeData& Data);
-
 	/**
 	 * Reacts to changes of the ASC, when the "Status.Dead" tag is applied or removed.
 	 * @param Unused. Only for interface call.
