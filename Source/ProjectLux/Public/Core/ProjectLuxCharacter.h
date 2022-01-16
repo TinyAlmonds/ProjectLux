@@ -170,6 +170,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
 	virtual void DeactivateAttackAbilityCombo();
 
+	/** Checks if the Character is dead.
+	 * @return True if the Character is dead; False otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	virtual bool IsDead();
+
 protected:
 	/** Called when the game starts or when spawned. */
 	virtual void BeginPlay() override;

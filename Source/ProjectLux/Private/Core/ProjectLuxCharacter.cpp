@@ -403,6 +403,19 @@ void AProjectLuxCharacter::DeactivateAttackAbilityCombo()
 	AttackAbilityNextSectionCombo = "COMBODEACTIVATED";
 }
 
+bool AProjectLuxCharacter::IsDead()
+{
+	if (AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->HasMatchingGameplayTag(DeadTag);
+	}
+	else
+	{
+		// if the ASC could not be retrieved we can not evaluate the state and therefore returning False
+		return false;
+	}
+}
+
 void AProjectLuxCharacter::BeginPlay()
 {
 	Super::BeginPlay();	
