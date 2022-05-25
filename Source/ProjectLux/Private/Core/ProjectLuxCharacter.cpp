@@ -425,31 +425,14 @@ void AProjectLuxCharacter::UpdateWallSlidingFlag()
 {
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 
-	if (CharacterMovementComponent)
+	if (CharacterMovementComponent && CharacterMovementComponent->IsFalling() && IsTouchingWallForWallSlide() && (CharacterMovementComponent->Velocity.Z <= 0.0f) )
 	{
-		if (CharacterMovementComponent->IsFalling())
-		{
-			if (IsTouchingWallForWallSlide())
-			{
-				if (CharacterMovementComponent->Velocity.Z <= 0.0f)
-				{
-					SetWallSlidingFlag(true);
-				}
-				else
-				{
-					SetWallSlidingFlag(false);
-				}
-			}
-			else
-			{
-				SetWallSlidingFlag(false);
-			}
-		}
-		else
-		{
-			SetWallSlidingFlag(false);
-		}
-	}	
+		SetWallSlidingFlag(true);
+	}
+	else
+	{
+		SetWallSlidingFlag(false);
+	}
 }
 
 void AProjectLuxCharacter::SetWallSlidingFlag(bool bFlagValue)
@@ -483,8 +466,14 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 						FRotator RotationToFaceWall = (-(LastValidWallSlideHitResult.Normal)).Rotation();
 						PossessingController->SetControlRotation(RotationToFaceWall);
 
-						// let the Character slide down the wall on the specified velocity
-						CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, VelocityZWallSlide);
+						// let the Character stick on the wall
+						AActor* WallActor = LastValidWallSlideHitResult.GetActor();
+						if (WallActor && (GetAttachParentActor() != WallActor))
+						{
+							AttachToActor(WallActor, FAttachmentTransformRules{ EAttachmentRule::KeepWorld, true});
+							CharacterMovementComponent->GravityScale = 0.0f;
+							CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
+						}
 					}
 				}
 			}
@@ -496,10 +485,30 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 	}
 	else
 	{
-		// we are not wall sliding anymore, so cancel the ability
+		// we are not wall sliding anymore, so cancel the ability and reset to "normal" movement
 		if (AbilitySystemComponent)
 		{
-			AbilitySystemComponent->CancelAbilities(&WallSlideTags);
+			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(WallSlideTags))
+			{
+				AbilitySystemComponent->CancelAbilities(&WallSlideTags);
+
+				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+				if (CharacterMovementComponent)
+				{
+					FGameplayTagContainer DashAbilityTags;
+					DashAbilityTags.AddTag(DashAbilityTag);
+					DashAbilityTags.AddTag(DoubleDashAbilityTag);
+					if (AbilitySystemComponent->HasAnyMatchingGameplayTags(DashAbilityTags) == false)
+					{
+						CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
+					}
+				}
+				AActor* WallActor = LastValidWallSlideHitResult.GetActor();
+				if (WallActor && (GetAttachParentActor() == WallActor))
+				{
+					DetachFromActor(FDetachmentTransformRules{ EDetachmentRule::KeepWorld, false });
+				}
+			}
 		}
 	}
 }
