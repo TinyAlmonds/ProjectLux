@@ -24,6 +24,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
 	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
+	GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
 	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) },
 	DeadTag{ FGameplayTag::RequestGameplayTag(FName("Status.Dead")) }
 {
@@ -102,6 +103,8 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+
 	UpdateWallSlidingFlag();
 
 	// snap Character to closest Spline location, when in Spline Movement
@@ -123,7 +126,6 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		else
 		{
 			// stop jumping, when "movement blocking abilities" are active
-			UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 			if (CharacterMovementComponent)
 			{
 				if (CharacterMovementComponent->IsFalling())
@@ -154,14 +156,11 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	}
 
 	// limit negative Z-Velocity (for better falling/air control, etc.)
+	if (CharacterMovementComponent && MovementAttributeSet)
 	{
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-		if (CharacterMovementComponent)
-		{
-			FVector CharacterVelocity = CharacterMovementComponent->Velocity;
-			CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, MaxFallVelocity) : CharacterVelocity.Z;
-			CharacterMovementComponent->Velocity = CharacterVelocity;
-		}
+		FVector CharacterVelocity = CharacterMovementComponent->Velocity;
+		CharacterVelocity.Z = (CharacterVelocity.Z < 0.0f) ? FMath::Max(CharacterVelocity.Z, MovementAttributeSet->GetMaxFallSpeed()) : CharacterVelocity.Z;
+		CharacterMovementComponent->Velocity = CharacterVelocity;
 	}
 }
 
@@ -340,6 +339,28 @@ void AProjectLuxCharacter::DashPress()
 	}
 }
 
+void AProjectLuxCharacter::GlidePress()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (AbilitySystemComponent && CharacterMovementComponent && CharacterMovementComponent->IsFalling())
+	{
+		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GlideAbilityTag)))
+		{
+			// we want to cancel the jump when the player is still holding the jump key, while trying to perform the Glide
+			StopJumping();
+		}
+	}
+}
+
+void AProjectLuxCharacter::GlideRelease()
+{
+	FGameplayTagContainer GlideAbilityTags(GlideAbilityTag);
+	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(GlideAbilityTags))
+	{
+		AbilitySystemComponent->CancelAbilities(&GlideAbilityTags);
+	}
+}
+
 void AProjectLuxCharacter::AttackPress()
 {
 	if (AbilitySystemComponent) 
@@ -495,6 +516,8 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 				if (CharacterMovementComponent)
 				{
+					// Do not change the GravityScale to its default value, when the player wants to (Double-)Dash, 
+					// since this will affect the GravityScale change in the (Double-)Dash ability
 					FGameplayTagContainer DashAbilityTags;
 					DashAbilityTags.AddTag(DashAbilityTag);
 					DashAbilityTags.AddTag(DoubleDashAbilityTag);
@@ -661,6 +684,27 @@ void AProjectLuxCharacter::StopDash()
 		CharacterMovementComponent->GroundFriction = DefaultValues.CharacterMovementComponentGroundFriction;
 		CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
 		CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
+	}
+}
+
+void AProjectLuxCharacter::Glide()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->GravityScale *= MovementAttributeSet->GetGravityScaleMultiplierGlide();
+		CharacterMovementComponent->AirControl = MovementAttributeSet->GetAirControlGlide();
+		CharacterMovementComponent->Velocity.Z = 0.0f;
+	}
+}
+
+void AProjectLuxCharacter::StopGlide()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->GravityScale = DefaultValues.CharacterMovementComponentGravityScale;
+		CharacterMovementComponent->AirControl = DefaultValues.CharacterMovementComponentAirControl;
 	}
 }
 

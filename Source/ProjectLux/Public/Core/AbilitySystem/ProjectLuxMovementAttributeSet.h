@@ -53,6 +53,11 @@ public:
 	FGameplayAttributeData JumpZVelocity;
 	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, JumpZVelocity)
 
+	/** Maximum fall speed (velocity in z-direction) of the character [uu/s].*/
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	FGameplayAttributeData MaxFallSpeed;
+	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, MaxFallSpeed)
+
 	/** Velocity  multiplier of the Dash ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData VelocityMultiplierDash;
@@ -66,7 +71,17 @@ public:
 	/** Velocity  multiplier in z-direction of the Wall Jump ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData VelocityZMultiplierWallJump;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, VelocityZMultiplierWallJump)	
+	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, VelocityZMultiplierWallJump)
+
+	/** Gravity scale multiplier of the Glide ability of the character.*/
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	FGameplayAttributeData GravityScaleMultiplierGlide;
+	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, GravityScaleMultiplierGlide)
+
+	/** AirControl of the Glide ability of the character.*/
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	FGameplayAttributeData AirControlGlide;
+	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, AirControlGlide)
 
 private:
 	/**

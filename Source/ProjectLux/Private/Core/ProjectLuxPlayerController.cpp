@@ -18,6 +18,8 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAxis("MoveUp", this, &AProjectLuxPlayerController::MoveUp);
     InputComponent->BindAxis("MoveRight", this, &AProjectLuxPlayerController::MoveRight);
     InputComponent->BindAction("Dash", IE_Pressed, this, &AProjectLuxPlayerController::DashPress);
+    InputComponent->BindAction("Glide", IE_Pressed, this, &AProjectLuxPlayerController::GlidePress);
+    InputComponent->BindAction("Glide", IE_Released, this, &AProjectLuxPlayerController::GlideRelease);
     InputComponent->BindAction("Attack", IE_Pressed, this, &AProjectLuxPlayerController::AttackPress);
 }
 
@@ -82,6 +84,32 @@ void AProjectLuxPlayerController::DashPress()
         if (LuxCharacter)
         {
             LuxCharacter->DashPress();
+        }
+    }
+}
+
+void AProjectLuxPlayerController::GlidePress()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->GlidePress();
+        }
+    }
+}
+
+void AProjectLuxPlayerController::GlideRelease()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->GlideRelease();
         }
     }
 }

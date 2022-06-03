@@ -56,9 +56,6 @@ class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySy
 	GENERATED_BODY()
 
 public:
-	/** Maximum falling velocity of the Character (three times the value of the MaxWalkSpeed) (range: <0.0 [uu/s]). */
-	static constexpr float MaxFallVelocity{ -3.0f * 600.0f };
-
 	/** Velocity in z-direction, when the Character is sliding down a wall (range: <0.0 [uu/s]). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMax = "0.0"))
 	float VelocityZWallSlide;
@@ -119,6 +116,14 @@ public:
 	/** Performs the dash ability when the Character has this ability. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void DashPress();
+
+	/** Performs the Glide ability when the Character has this ability. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void GlidePress();
+
+	/** Stops the Glide ability when the Character has this ability. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void GlideRelease();
 
 	/** Performs the attack ability when the Character has this ability. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
@@ -211,6 +216,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
 	virtual void StopDash();
 
+	/** Lets the Character glide/hover. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
+	virtual void Glide();
+
+	/** Stops the glide/hover of the Character. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
+	virtual void StopGlide();
+
 	/** Reacts to Health attribute changes and calls the Blueprint event.*/
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 
@@ -281,6 +294,9 @@ private:
 
 	/** Member holding the tag which describes the Double-Dash ability. */
 	FGameplayTag DoubleDashAbilityTag;
+
+	/** Member holding the tag which describes the Glide ability. */
+	FGameplayTag GlideAbilityTag;
 
 	/** Member holding the tag which describes the Attack ability. */
 	FGameplayTag AttackAbilityTag;
