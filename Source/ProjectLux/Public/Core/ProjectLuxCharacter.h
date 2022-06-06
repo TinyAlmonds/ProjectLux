@@ -113,6 +113,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveUp(float AxisValue);
 
+	/** Activates the Sprint Ability of the character if conditions are met. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void SprintPress();
+
+	/** Cancels the Sprint Ability of the character. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void SprintRelease();
+
 	/** Performs the dash ability when the Character has this ability. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void DashPress();
@@ -282,6 +290,9 @@ private:
 	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
 	USplineComponent const* MovementSplineComponentFromWorld;
+
+	/** Member holding the tag which describes the Sprint ability. */
+	FGameplayTag SprintAbilityTag;
 
 	/** Member holding the tag which describes the Wall Slide ability. */
 	FGameplayTag WallSlideAbilityTag;

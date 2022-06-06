@@ -37,6 +37,12 @@ private:
 	 */
 	void MoveUp(float AxisValue);
 
+	/** Method bound to the "Sprint" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void SprintPress();
+
+	/** Method bound to the "Sprint" input action mapping, when the button is released. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void SprintRelease();
+
 	/** Method bound to the "Dash" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void DashPress();
 

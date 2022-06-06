@@ -17,6 +17,8 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("Jump", IE_Released, this, &AProjectLuxPlayerController::JumpRelease);
     InputComponent->BindAxis("MoveUp", this, &AProjectLuxPlayerController::MoveUp);
     InputComponent->BindAxis("MoveRight", this, &AProjectLuxPlayerController::MoveRight);
+    InputComponent->BindAction("Sprint", IE_Pressed, this, &AProjectLuxPlayerController::SprintPress);
+    InputComponent->BindAction("Sprint", IE_Released, this, &AProjectLuxPlayerController::SprintRelease);
     InputComponent->BindAction("Dash", IE_Pressed, this, &AProjectLuxPlayerController::DashPress);
     InputComponent->BindAction("Glide", IE_Pressed, this, &AProjectLuxPlayerController::GlidePress);
     InputComponent->BindAction("Glide", IE_Released, this, &AProjectLuxPlayerController::GlideRelease);
@@ -71,6 +73,32 @@ void AProjectLuxPlayerController::MoveUp(float AxisValue)
         if (LuxCharacter)
         {
             LuxCharacter->MoveUp(AxisValue);
+        }
+    }
+}
+
+void AProjectLuxPlayerController::SprintPress()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->SprintPress();
+        }
+    }
+}
+
+void AProjectLuxPlayerController::SprintRelease()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->SprintRelease();
         }
     }
 }

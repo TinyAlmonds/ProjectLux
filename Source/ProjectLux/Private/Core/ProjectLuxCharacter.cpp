@@ -20,6 +20,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MovementSpace{EMovementSpaceState::MovementIn3D},
 	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
 	MovementSplineComponentFromWorld{nullptr},
+	SprintAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint")) },
 	WallSlideAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide")) },
 	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
@@ -312,6 +313,27 @@ void AProjectLuxCharacter::MoveUp(float AxisValue)
 		default:
 			break;
 		}
+	}
+}
+
+void AProjectLuxCharacter::SprintPress()
+{
+	if (AbilitySystemComponent)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent && !CharacterMovementComponent->IsFalling())
+		{
+			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(SprintAbilityTag));
+		}
+	}
+}
+
+void AProjectLuxCharacter::SprintRelease()
+{
+	if (AbilitySystemComponent->HasMatchingGameplayTag(SprintAbilityTag))
+	{
+		FGameplayTagContainer SprintAbilityTags(SprintAbilityTag);
+		AbilitySystemComponent->CancelAbilities(&SprintAbilityTags);
 	}
 }
 
