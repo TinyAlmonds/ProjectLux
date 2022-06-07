@@ -46,7 +46,7 @@ struct FProjectLuxCharacterDefaultValues
 	float CharacterMovementComponentAirControl{ 1.0f };
 	float CharacterMovementComponentAirControlBoostMultiplier{ 0.0f };
 	float CharacterMovementComponentAirControlBoostVelocityThreshold{ 0.0f };
-	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 30.0f, 0.0f);
+	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 19.0f, 0.0f);
 };
 
 
