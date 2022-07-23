@@ -29,37 +29,12 @@ enum class EMovementSpaceState : uint8
 	MovementOnSpline
 };
 
-/** Struct holding default values for the ProjectLuxCharacter. */
-USTRUCT()
-struct FProjectLuxCharacterDefaultValues
-{
-	GENERATED_BODY()
-
-	FProjectLuxCharacterDefaultValues() {};
-
-	float VelocityZWallSlide{ -180.0f };
-	float CharacterJumpMaxHoldTime{ 0.35f };
-	float CharacterMovementComponentGravityScale{ 5.5f };
-	float CharacterMovementComponentMaxAcceleration{ 8192.0f };
-	float CharacterMovementComponentGroundFriction{ 8.0f };
-	float CharacterMovementComponentBrakingDecelerationFalling{ 2048.0f };
-	float CharacterMovementComponentAirControl{ 1.0f };
-	float CharacterMovementComponentAirControlBoostMultiplier{ 0.0f };
-	float CharacterMovementComponentAirControlBoostVelocityThreshold{ 0.0f };
-	FRotator CharacterMovementComponentRotationRate = FRotator(0.0f, 19.0f, 0.0f);
-};
-
-
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
-public:
-	/** Velocity in z-direction, when the Character is sliding down a wall (range: <0.0 [uu/s]). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character|Movement", meta = (ClampMax = "0.0"))
-	float VelocityZWallSlide;
-	
+public:	
 	/** Default GameplayAbilities for this character. These will be removed and added again on character possession. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
@@ -74,9 +49,6 @@ public:
 
 	/** Sets default values for this character's properties */
 	AProjectLuxCharacter();
-
-	/** Called after the C++ constructor and after the properties have been initialized, including those loaded from config. */
-	virtual void PostInitProperties() override;
 
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
@@ -212,26 +184,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Movement", DisplayName = "On MovementSpaceState Changed")
 	void MovementSpaceStateChanged();
 
-	/** Launches the Character of the wall and rotates her towards launch direction. */
-	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
-	virtual void WallJump();
-
-	/** Dashes the Character rotates her towards dash direction. */
-	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
-	virtual void Dash();
-
-	/** Stops the dash of the Character. */
-	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
-	virtual void StopDash();
-
-	/** Lets the Character glide/hover. */
-	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
-	virtual void Glide();
-
-	/** Stops the glide/hover of the Character. */
-	UFUNCTION(BlueprintCallable, Category = "Character|Movement|Ability")
-	virtual void StopGlide();
-
 	/** Reacts to Health attribute changes and calls the Blueprint event.*/
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 
@@ -256,9 +208,20 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", DisplayName = "On Died")
 	void Died();
 
-private:
-	/** The default values for various members of this Character. */
-	FProjectLuxCharacterDefaultValues DefaultValues;
+	/**
+	 * Checks, whether the Character touches a wall for the wall slide.
+	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
+	 */
+	virtual TOptional<FHitResult> IsTouchingWallForWallSlide();
+
+	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
+	virtual void UpdateRotationToMoveInput();
+
+	/**
+	 * Member holds the default value of the CharacterMovementComponent's GravityScale
+	 * @note This is a little flaw in the class design, since this value has to kept in sync with the constant default value in the related Blueprint class.
+	 */
+	static constexpr float DefaultCharacterMovementComponentGravityScale{ 5.5f };
 
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
@@ -273,9 +236,11 @@ private:
 	UProjectLuxMovementAttributeSet* MovementAttributeSet;
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
+	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
 	float AxisValueMoveUp;
 
 	/** Member holding the last set value of the MoveRight axis mapping. */
+	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
 	float AxisValueMoveRight;
 
 	/** Member indicating whether the Character should wall slide or not. */
@@ -326,13 +291,4 @@ private:
 
 	/** FHitResult of the last valid IsTouchingWallForWallSlide() method call. Only use it when the Character is wall sliding.*/
 	FHitResult LastValidWallSlideHitResult;
-
-	/**
-	 * Checks, whether the Character touches a wall for the wall slide.
-	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
-	 */
-	TOptional<FHitResult> IsTouchingWallForWallSlide();
-
-	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
-	void UpdateRotationToMoveInput();
 };
