@@ -1,6 +1,9 @@
 AttributeName,1
 MaxWalkSpeed,600.0
 JumpZVelocity,1000.0
+MaxFallSpeed,-1200.0
 VelocityMultiplierDash,3.0
 VelocityXYMultiplierWallJump,1.8
 VelocityZMultiplierWallJump,1.8
+GravityScaleMultiplierGlide,0.1
+AirControlGlide,0.4
