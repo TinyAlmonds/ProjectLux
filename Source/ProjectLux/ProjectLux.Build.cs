@@ -13,9 +13,6 @@ public class ProjectLux : ModuleRules
 		// Dependencies for the "Gameplay Ability System" plugin
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayAbilities", "GameplayTags", "GameplayTasks" });
 
-		// Dependencies for the "AI System" (BehaviorTree, ...)
-		PrivateDependencyModuleNames.AddRange(new string[] {"AIModule"});
-
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 

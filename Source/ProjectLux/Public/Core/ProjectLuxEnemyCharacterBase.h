@@ -12,7 +12,6 @@
 // Forward declarations
 struct FOnAttributeChangeData;
 class UAbilitySystemComponent;
-class UBehaviorTree;
 class UGameplayEffect;
 class UProjectLuxCharacterAttributeSet;
 
@@ -24,10 +23,6 @@ class PROJECTLUX_API AProjectLuxEnemyCharacterBase : public ACharacter, public I
 public:
 	// Sets default values for this character's properties
 	AProjectLuxEnemyCharacterBase();
-
-	/** BehaviorTree which is used in the possessing AIController::RunBehaviorTree() method. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|AI")
-	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
