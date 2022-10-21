@@ -5,6 +5,7 @@ Comment: You can create the "Table of Contents", by copying the content of the R
 -->
 - [Project Lux](#project-lux)
   * [Description](#description)
+  * [Project Management](#project-management)
   * [Guidelines and Best Practices](#guidelines-and-best-practices)
     + [Style guidelines for Unreal Engine 5](#style-guidelines-for-unreal-engine-5)
       - [Additional Asset Name Modifiers](#additional-asset-name-modifiers)
@@ -14,7 +15,11 @@ Comment: You can create the "Table of Contents", by copying the content of the R
       - [Pull requests](#pull-requests)
 
 ## Description
-Project Lux is a 2.5D Metroidvania game and is developed with the help of Unreal Engine version *5.0*.
+Project Lux is a 2.5D Metroidvania game and is developed with the help of *Unreal Engine 5*.
+
+## Project Management
+
+For collaboration and progress monitoring, a project management system was set up with [Notion](https://www.notion.so/product?fredir=1). You can get the link and access to it from [Alex Nördemann](https://github.com/alexnoerdemann).
 
 ## Guidelines and Best Practices
 > **Note**:  
@@ -33,7 +38,7 @@ In addition to the previously mentioned guidelines, we make use of the following
 | Gameplay Effect         | GE_        |            |                                  |
 
 ### Coding guidelines
-For our codebase we follow the coding standard provided by the developers of the Unreal Engine, which can be found [here](https://docs.unrealengine.com/5.0/en-US/epic-cplusplus-coding-standardblueprint-debugging-in-unreal-engine/).
+For our codebase we follow the coding standard provided by the developers of the Unreal Engine, which can be found [here](https://docs.unrealengine.com/5.0/en-US/epic-cplusplus-coding-standard-for-unreal-engine/).
 
 ### Git and GitHub guidelines
 #### Commit messages
