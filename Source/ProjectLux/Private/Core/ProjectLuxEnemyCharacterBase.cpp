@@ -1,8 +1,12 @@
+// Copyright TinyAlmonds (Alex Nördemann)
+
 #include "Core/ProjectLuxEnemyCharacterBase.h"
 
+#include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 
+#include "Core/AbilitySystem/ProjectLuxAbilitySystemComponent.h"
 #include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
 
 
@@ -13,7 +17,7 @@ AProjectLuxEnemyCharacterBase::AProjectLuxEnemyCharacterBase() :
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Construct the ASC
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UProjectLuxAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Construct the attribute sets
 	AttributeSet = CreateDefaultSubobject<UProjectLuxCharacterAttributeSet>(TEXT("AttributeSet"));
@@ -34,6 +38,12 @@ void AProjectLuxEnemyCharacterBase::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	// add default abilities to ASC
+	for (TSubclassOf<UGameplayAbility> const& DefaultAbility : DefaultAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility, 1, -1, this));
+	}
 
 	// initialize AttributeSet by an instant GameplayEffect (which does exactly this)
 	if(IsValid(AttributeSetInitEffect))

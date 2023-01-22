@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright TinyAlmonds (Alex Nördemann)
 
 #pragma once
 
@@ -11,7 +11,8 @@
 
 // Forward declarations
 struct FOnAttributeChangeData;
-class UAbilitySystemComponent;
+class UProjectLuxAbilitySystemComponent;
+class UGameplayAbility;
 class UGameplayEffect;
 class UProjectLuxCharacterAttributeSet;
 
@@ -27,6 +28,10 @@ public:
 	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TSubclassOf<UGameplayEffect> AttributeSetInitEffect;
+
+	/** Default GameplayAbilities for this character. These will be added on character possession. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -77,7 +82,7 @@ protected:
 
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent;
+	UProjectLuxAbilitySystemComponent* AbilitySystemComponent;
 	
 	/** List of attributes modified by the ASC. */
 	UPROPERTY()

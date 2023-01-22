@@ -86,3 +86,9 @@ Debug/*
 # local developer files
 Content/Developers/*
 
+########## Debugging Stuff
+Content/ParagonSunWukong/*
+Content/ParagonMinions/*
+Content/MSPresets/*
+Content/UE4_Mannequin_Mobile/*
+Content/ProjectLux/Maps/Concept/*
