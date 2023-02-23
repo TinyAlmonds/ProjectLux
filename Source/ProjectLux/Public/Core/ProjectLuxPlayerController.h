@@ -54,4 +54,7 @@ private:
 
 	/** Method bound to the "Attack" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void AttackPress();
+
+	/** Method bound to the "QuickStep" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
+	void QuickStepPress();
 };

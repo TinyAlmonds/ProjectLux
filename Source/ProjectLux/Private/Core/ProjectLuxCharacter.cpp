@@ -25,6 +25,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
 	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
 	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
+	QuickStepAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.QuickStep")) },
 	GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
 	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) },
 	DeadTag{ FGameplayTag::RequestGameplayTag(FName("Status.Dead")) }
@@ -43,6 +44,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() :
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
 	MoveBlockingAbilityTags.AddTag(DashAbilityTag);
 	MoveBlockingAbilityTags.AddTag(DoubleDashAbilityTag);
+	MoveBlockingAbilityTags.AddTag(QuickStepAbilityTag);
 }
 
 void AProjectLuxCharacter::Tick(float DeltaTime)
@@ -80,13 +82,13 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 				}
 			}
 
-			// rotate Character while dashing on a Spline
+			// rotate Character while moving on a Spline
 			if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
 
-				// face/rotate the Character in Dash direction, since the FindRotationClosestToWorldLocation() does not account for this
+				// face/rotate the Character in moving direction, since the FindRotationClosestToWorldLocation() does not account for this
 				if (FMath::Abs(ClosestWorldRotationOnSpline.Yaw - GetActorForwardVector().Rotation().Yaw) > 90.0f)
 				{
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
@@ -302,6 +304,18 @@ void AProjectLuxCharacter::DashPress()
 		if(AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
 		{
 			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DoubleDashAbilityTag));
+		}
+	}
+}
+
+void AProjectLuxCharacter::QuickStepPress()
+{
+	if (AbilitySystemComponent)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent && !CharacterMovementComponent->IsFalling())
+		{
+			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(QuickStepAbilityTag));
 		}
 	}
 }

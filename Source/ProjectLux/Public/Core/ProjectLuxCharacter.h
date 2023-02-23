@@ -97,6 +97,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void DashPress();
 
+	/** Activates the QuickStep Ability of the character if conditions are met. */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	virtual void QuickStepPress();
+
 	/** Performs the Glide ability when the Character has this ability. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void GlidePress();
@@ -270,6 +274,9 @@ protected:
 
 	/** Member holding the tag which describes the Double-Dash ability. */
 	FGameplayTag DoubleDashAbilityTag;
+
+	/** Member holding the tag which describes the QuickStep ability. */
+	FGameplayTag QuickStepAbilityTag;
 
 	/** Member holding the tag which describes the Glide ability. */
 	FGameplayTag GlideAbilityTag;

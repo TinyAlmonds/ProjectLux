@@ -20,6 +20,7 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("Sprint", IE_Pressed, this, &AProjectLuxPlayerController::SprintPress);
     InputComponent->BindAction("Sprint", IE_Released, this, &AProjectLuxPlayerController::SprintRelease);
     InputComponent->BindAction("Dash", IE_Pressed, this, &AProjectLuxPlayerController::DashPress);
+    InputComponent->BindAction("QuickStep", IE_Pressed, this, &AProjectLuxPlayerController::QuickStepPress);
     InputComponent->BindAction("Glide", IE_Pressed, this, &AProjectLuxPlayerController::GlidePress);
     InputComponent->BindAction("Glide", IE_Released, this, &AProjectLuxPlayerController::GlideRelease);
     InputComponent->BindAction("Attack", IE_Pressed, this, &AProjectLuxPlayerController::AttackPress);
@@ -112,6 +113,19 @@ void AProjectLuxPlayerController::DashPress()
         if (LuxCharacter)
         {
             LuxCharacter->DashPress();
+        }
+    }
+}
+
+void AProjectLuxPlayerController::QuickStepPress()
+{
+    APawn* PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->QuickStepPress();
         }
     }
 }
