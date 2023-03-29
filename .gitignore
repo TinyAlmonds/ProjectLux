@@ -38,6 +38,9 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+.vscode
+.ignore
+*.code-workspace
 *.suo
 *.opensdf
 *.sdf
