@@ -68,8 +68,8 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	{
 		// only allow rotation to movement input when "movement blocking ability" are inactive
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
-		{
-			UpdateRotationToMoveInput();
+		{			
+			UpdateRotationToMoveInput();			
 		}
 		else
 		{
@@ -625,6 +625,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 		FRotator DesiredRotationFromInput(0.0f, 0.0f, 0.0f);
 		float DeltaSeconds = World->GetDeltaSeconds();
 		float RotationRateYaw = CharacterMovementComponent->RotationRate.Yaw;
+		const bool WallSlideAbilityActive{AbilitySystemComponent->HasAnyMatchingGameplayTags(FGameplayTagContainer(WallSlideAbilityTag))};
 		// calculate the desired rotation depending on the input and "movement space state"
 		switch (MovementSpace)
 		{
@@ -632,14 +633,28 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 			if (AxisValueMoveRight != 0.0f)
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				if(WallSlideAbilityActive)
+				{					
+					TryRotateAwayFromWall(DesiredRotationFromInput);
+				}
+				else
+				{
+					PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				}
 			}
 			break;
 		case EMovementSpaceState::MovementIn3D:
 			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				if(WallSlideAbilityActive)
+				{
+					TryRotateAwayFromWall(DesiredRotationFromInput);
+				}
+				else
+				{
+					PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				}
 			}
 			break;
 		case EMovementSpaceState::MovementOnSpline:
@@ -656,11 +671,33 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}
 				DesiredRotationFromInput = FRotator(0.0f, ClosestWorldRotationOnSpline.Yaw, 0.0f);
-				PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				if(WallSlideAbilityActive)
+				{
+					TryRotateAwayFromWall(DesiredRotationFromInput);
+				}
+				else
+				{
+					PossessingController->SetControlRotation(FMath::RInterpTo(GetControlRotation(), DesiredRotationFromInput, DeltaSeconds, RotationRateYaw));
+				}
 			}
 			break;
 		default:
 			break;
 		}
 	}	
+}
+
+void AProjectLuxCharacter::TryRotateAwayFromWall(const FRotator3d& RotationFromInput)
+{	
+	static constexpr double YawAngleToleranceInDegrees{45.0 / 2.0};
+
+	AController* PossessingController = GetController();
+	if (PossessingController)
+	{
+		const double YawAngle{FRotator::NormalizeAxis((RotationFromInput - LastValidWallSlideHitResult.Normal.Rotation()).Yaw)};
+		if(FMath::Abs(YawAngle) < YawAngleToleranceInDegrees)
+		{
+			PossessingController->SetControlRotation(RotationFromInput);
+		}
+	}
 }

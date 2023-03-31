@@ -222,6 +222,12 @@ protected:
 	virtual void UpdateRotationToMoveInput();
 
 	/**
+	 * Tries to rotate the character away from the wall which causes the WallSlide ability. If the input hits a certain threshold away from the wall, the rotation will succeed.
+	 * @param RotationFromInput - The input to which the character should rotate.
+	 */
+	virtual void TryRotateAwayFromWall(const FRotator3d& RotationFromInput);
+
+	/**
 	 * Member holds the default value of the CharacterMovementComponent's GravityScale
 	 * @note This is a little flaw in the class design, since this value has to kept in sync with the constant default value in the related Blueprint class.
 	 */
