@@ -72,14 +72,14 @@ public:
 	virtual void JumpRelease();
 
 	/**
-	 * Moves the Character to the right and updates the related axis value member.
+	 * Updates the right axis value member to the given input.
 	 * @param AxisValue - The axis value to set (range: -1.0 to 1.0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void MoveRight(float AxisValue);
 
 	/**
-	 * Moves the Character up and updates the related axis value member.
+	 * Updates the up axis value member to the given input.
 	 * @param AxisValue - The axis value to set (range: -1.0 to 1.0).
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
@@ -217,6 +217,12 @@ protected:
 	 * @return An TOptional with the FHitResult of the wall when the Character faces and touches the wall, and is currently falling. Otherwise an empty TOptional.
 	 */
 	virtual TOptional<FHitResult> IsTouchingWallForWallSlide();
+
+	/** 
+	 * Updates the movement direction of the Character to the last MoveUp-/Right input. This method is called on every Tick.
+	 * @note The related MoveUp-/Right member are also update, if they are not zero, to match the normalization of the movement direction.
+	 */
+	virtual void UpdateMovementToMoveInput();
 
 	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
 	virtual void UpdateRotationToMoveInput();

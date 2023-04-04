@@ -68,7 +68,8 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	{
 		// only allow rotation to movement input when "movement blocking ability" are inactive
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
-		{			
+		{
+			UpdateMovementToMoveInput();	
 			UpdateRotationToMoveInput();			
 		}
 		else
@@ -198,69 +199,11 @@ void AProjectLuxCharacter::JumpRelease()
 void AProjectLuxCharacter::MoveRight(float AxisValue)
 {
 	AxisValueMoveRight = AxisValue;
-
-	if (AbilitySystemComponent)
-	{
-		// block movement when "movement blocking ability" are active or we are wall sliding
-		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
-		{
-			return;
-		}
-	}
-
-	if (AxisValue != 0.0f)
-	{
-		FVector MovementDirection(0.0f, 0.0f, 0.0f);
-		switch (MovementSpace)
-		{
-		case EMovementSpaceState::MovementIn2D:
-		case EMovementSpaceState::MovementIn3D:
-			MovementDirection.Y = AxisValue;
-			AddMovementInput(MovementDirection);
-			break;
-		case EMovementSpaceState::MovementOnSpline:
-			if (MovementSplineComponentFromWorld)
-			{
-				MovementDirection = AxisValue * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
-				AddMovementInput(MovementDirection);
-			}
-			break;
-		default:
-			break;
-		}
-	}
 }
 
 void AProjectLuxCharacter::MoveUp(float AxisValue)
 {
 	AxisValueMoveUp = AxisValue;
-
-	if (AbilitySystemComponent)
-	{
-		// block movement when "movement blocking ability" are active or we are wall sliding
-		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
-		{
-			return;
-		}
-	}
-
-	if (AxisValue != 0.0f)
-	{
-		FVector MovementDirection(0.0f, 0.0f, 0.0f);
-		switch (MovementSpace)
-		{
-		case EMovementSpaceState::MovementIn2D:
-			break;
-		case EMovementSpaceState::MovementIn3D:
-			MovementDirection.X = AxisValue;
-			AddMovementInput(MovementDirection);
-			break;
-		case EMovementSpaceState::MovementOnSpline:
-			break;
-		default:
-			break;
-		}
-	}
 }
 
 void AProjectLuxCharacter::SprintPress()
@@ -612,6 +555,72 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
 		return TOptional<FHitResult>{OutWallHit};
 	}
 	return TOptional<FHitResult>{};
+}
+
+void AProjectLuxCharacter::UpdateMovementToMoveInput()
+{
+	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
+	{
+		return;
+	}
+
+	// determine movement direction:
+	FVector MovementDirection(0.0f, 0.0f, 0.0f);
+	if (AxisValueMoveRight != 0.0f)
+	{
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+		case EMovementSpaceState::MovementIn3D:
+			MovementDirection.Y = AxisValueMoveRight;
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			if (MovementSplineComponentFromWorld)
+			{
+				MovementDirection = AxisValueMoveRight * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (AxisValueMoveUp != 0.0f)
+	{
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+		case EMovementSpaceState::MovementIn3D:
+			MovementDirection.X = AxisValueMoveUp;
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			break;
+		default:
+			break;
+		}
+	}
+
+	// apply movement if useful:
+	if(!MovementDirection.IsNearlyZero())
+	{
+		MovementDirection.Normalize();
+		AddMovementInput(MovementDirection);
+
+		// update last input to match normalization of the movement direction
+		switch (MovementSpace)
+		{
+		case EMovementSpaceState::MovementIn2D:
+		case EMovementSpaceState::MovementIn3D:
+			AxisValueMoveUp = MovementDirection.X;
+			AxisValueMoveRight = MovementDirection.Y;
+			break;
+		case EMovementSpaceState::MovementOnSpline:
+			AxisValueMoveRight = MovementDirection.Y;
+			break;
+		default:
+			break;
+		}
+	}	
 }
 
 void AProjectLuxCharacter::UpdateRotationToMoveInput()
