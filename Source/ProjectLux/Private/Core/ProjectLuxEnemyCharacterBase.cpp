@@ -1,4 +1,4 @@
-// Copyright TinyAlmonds (Alex Nördemann)
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/ProjectLuxEnemyCharacterBase.h"
 

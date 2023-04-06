@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
+#include "Types/ProjectLuxMovementSpaceState.h"
 #include "ProjectLuxCharacter.generated.h"
 
 
@@ -19,15 +20,6 @@ template<typename OptionalType>
 struct TOptional;
 struct FHitResult;
 class USplineComponent;
-
-/** Enum indicating the space in which the Character is able to move. */
-UENUM(BlueprintType)
-enum class EMovementSpaceState : uint8
-{
-	MovementIn2D,
-	MovementIn3D,
-	MovementOnSpline
-};
 
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
