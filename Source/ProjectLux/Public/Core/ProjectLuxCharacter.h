@@ -1,13 +1,14 @@
-#pragma once
+// Copyright TinyAlmonds (Alex Noerdemann)
 
+#pragma once
 
 #include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
+
 #include "Types/ProjectLuxMovementSpaceState.h"
 #include "ProjectLuxCharacter.generated.h"
-
 
 // Forward declarations
 class UGameplayAbility;
@@ -16,17 +17,20 @@ class UAbilitySystemComponent;
 class UProjectLuxCharacterAttributeSet;
 class UProjectLuxMovementAttributeSet;
 struct FOnAttributeChangeData;
-template<typename OptionalType>
+template <typename OptionalType>
 struct TOptional;
 struct FHitResult;
 class USplineComponent;
 
+/**
+ * Class for the main playable character of the game.
+ */
 UCLASS()
 class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	/** Default GameplayAbilities for this character. These will be removed and added again on character possession. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
@@ -50,10 +54,10 @@ public:
 	 * @return The AbilitySystemComponent (ASC) of this Actor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Abilities")
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
+	virtual UAbilitySystemComponent *GetAbilitySystemComponent() const override;
+
 	/** Runs logic when this Character is possessed. */
-	virtual void PossessedBy(AController* NewController) override;
+	virtual void PossessedBy(AController *NewController) override;
 
 	/** Performs a wall jump when the Character is wall sliding otherwise a jump until the jump button is released or exceeds the max hold time. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
@@ -110,14 +114,14 @@ public:
 	 * @return True if the Character is wall sliding, False otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual bool GetWallSlidingFlag() const;
+	bool GetWallSlidingFlag() const;
 
 	/**
 	 * Returns the current value of the movement space state.
 	 * @return The current value of the movement space state member.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual EMovementSpaceState GetMovementSpaceState() const;
+	EMovementSpaceState GetMovementSpaceState() const;
 
 	/**
 	 * Sets the movement space state of the Character to the given value and triggers a logic on state changes.
@@ -131,14 +135,14 @@ public:
 	 * @return The previous value of the movement space state member.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual EMovementSpaceState GetPreviousMovementSpaceState() const;
+	EMovementSpaceState GetPreviousMovementSpaceState() const;
 
 	/**
 	 * Sets the USplineComponent of the Character to the given value which is needed for the EMovementSpaceState::MovementOnSpline state.
 	 * @param MovementSplineComponent - The USplineComponent to set.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual void SetMovementSpline(USplineComponent const* MovementSplineComponent);
+	virtual void SetMovementSpline(USplineComponent const *MovementSplineComponent);
 
 	/**
 	 * Activates the combo for the attack ability of the Character.
@@ -181,17 +185,17 @@ protected:
 	void MovementSpaceStateChanged();
 
 	/** Reacts to Health attribute changes and calls the Blueprint event.*/
-	void OnHealthChanged(const FOnAttributeChangeData& Data);
+	void OnHealthChanged(FOnAttributeChangeData const &Data);
 
 	/** Event for the Blueprint class to react to Health changes of the AttributeSet.*/
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character|Attributes", DisplayName = "On Health Changed")
 	void HealthChanged(float OldValue, float NewValue);
 
 	/** Reacts to MaxWalkSpeed attribute changes.*/
-	void OnMaxWalkSpeedAttributeChanged(const FOnAttributeChangeData& Data);
+	void OnMaxWalkSpeedAttributeChanged(FOnAttributeChangeData const &Data);
 
 	/** Reacts to JumpZVelocity attribute changes.*/
-	void OnJumpZVelocityAttributeChanged(const FOnAttributeChangeData& Data);
+	void OnJumpZVelocityAttributeChanged(FOnAttributeChangeData const &Data);
 
 	/**
 	 * Reacts to changes of the ASC, when the "Status.Dead" tag is applied or removed.
@@ -210,7 +214,7 @@ protected:
 	 */
 	virtual TOptional<FHitResult> IsTouchingWallForWallSlide();
 
-	/** 
+	/**
 	 * Updates the movement direction of the Character to the last MoveUp-/Right input. This method is called on every Tick.
 	 * @note The related MoveUp-/Right member are also update, if they are not zero, to match the normalization of the movement direction.
 	 */
@@ -223,25 +227,25 @@ protected:
 	 * Tries to rotate the character away from the wall which causes the WallSlide ability. If the input hits a certain threshold away from the wall, the rotation will succeed.
 	 * @param RotationFromInput - The input to which the character should rotate.
 	 */
-	virtual void TryRotateAwayFromWall(const FRotator3d& RotationFromInput);
+	virtual void TryRotateAwayFromWall(FRotator3d const &RotationFromInput);
 
 	/**
 	 * Member holds the default value of the CharacterMovementComponent's GravityScale
 	 * @note This is a little flaw in the class design, since this value has to kept in sync with the constant default value in the related Blueprint class.
 	 */
-	static constexpr float DefaultCharacterMovementComponentGravityScale{ 5.5f };
+	static constexpr float DefaultCharacterMovementComponentGravityScale{5.5f};
 
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent;
+	UAbilitySystemComponent *AbilitySystemComponent;
 
 	/** List of attributes modified by the ability system */
 	UPROPERTY()
-	UProjectLuxCharacterAttributeSet* AttributeSet;
+	UProjectLuxCharacterAttributeSet *AttributeSet;
 
 	/** List of movement related attributes modified by the ability system */
 	UPROPERTY()
-	UProjectLuxMovementAttributeSet* MovementAttributeSet;
+	UProjectLuxMovementAttributeSet *MovementAttributeSet;
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
@@ -262,7 +266,7 @@ protected:
 
 	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
-	USplineComponent const* MovementSplineComponentFromWorld;
+	USplineComponent const *MovementSplineComponentFromWorld;
 
 	/** Member holding the tag which describes the Sprint ability. */
 	FGameplayTag SprintAbilityTag;

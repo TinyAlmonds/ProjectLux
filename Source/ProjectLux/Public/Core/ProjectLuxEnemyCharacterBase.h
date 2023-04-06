@@ -1,4 +1,4 @@
-// Copyright TinyAlmonds (Alex Nördemann)
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #pragma once
 
@@ -35,23 +35,23 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	/**
 	 * Returns the AbilitySystemComponent (ASC) of this Actor.
 	 * @return The AbilitySystemComponent (ASC) of this Actor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Abilities")
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent *GetAbilitySystemComponent() const override;
 
 	/** Runs logic when this Character is possessed. */
-	virtual void PossessedBy(AController* NewController) override;
+	virtual void PossessedBy(AController *NewController) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	/** Reacts to Health attribute changes and calls the Blueprint event.*/
-	virtual void OnHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void OnHealthChanged(FOnAttributeChangeData const &Data);
 
 	/** Event for the Blueprint class to react to Health changes of the AttributeSet.*/
 	UFUNCTION(BlueprintNativeEvent, Category = "Character|Attributes", DisplayName = "On Health Changed")
@@ -82,11 +82,11 @@ protected:
 
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
-	UProjectLuxAbilitySystemComponent* AbilitySystemComponent;
-	
+	UProjectLuxAbilitySystemComponent *AbilitySystemComponent;
+
 	/** List of attributes modified by the ASC. */
 	UPROPERTY()
-	UProjectLuxCharacterAttributeSet* AttributeSet;
+	UProjectLuxCharacterAttributeSet *AttributeSet;
 
 	/** Member holding the tag which describes the death of the character. */
 	FGameplayTag DeadTag;

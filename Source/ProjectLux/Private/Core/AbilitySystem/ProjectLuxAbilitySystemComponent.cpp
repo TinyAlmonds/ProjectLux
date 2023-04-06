@@ -1,18 +1,16 @@
-// Copyright TinyAlmonds (Alex Nördemann)
-
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/AbilitySystem/ProjectLuxAbilitySystemComponent.h"
 
-
-bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility>& InAbilityToCheck)
+bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToCheck)
 {
-	const UGameplayAbility* const InAbilityCDO = InAbilityToCheck.GetDefaultObject();
+	const UGameplayAbility *const InAbilityCDO = InAbilityToCheck.GetDefaultObject();
 
-	for (const FGameplayAbilitySpec& ActivatableSpec : ActivatableAbilities.Items)
+	for (const FGameplayAbilitySpec &ActivatableSpec : ActivatableAbilities.Items)
 	{
 		if (ActivatableSpec.Ability == InAbilityCDO)
 		{
-			const FGameplayAbilitySpec* const Spec = FindAbilitySpecFromHandle(ActivatableSpec.Handle);
+			const FGameplayAbilitySpec *const Spec = FindAbilitySpecFromHandle(ActivatableSpec.Handle);
 			if (!Spec)
 			{
 				return false;
@@ -22,13 +20,13 @@ bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclas
 				return false;
 			}
 
-			const UGameplayAbility* const Ability = Spec->Ability;
+			const UGameplayAbility *const Ability = Spec->Ability;
 			if (!Ability)
 			{
 				return false;
 			}
 
-			const FGameplayAbilityActorInfo* const ActorInfo = AbilityActorInfo.Get();
+			const FGameplayAbilityActorInfo *const ActorInfo = AbilityActorInfo.Get();
 			if (ActorInfo == nullptr || !ActorInfo->OwnerActor.IsValid() || !ActorInfo->AvatarActor.IsValid())
 			{
 				return false;
@@ -42,8 +40,7 @@ bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclas
 	return false;
 }
 
-
-UGameplayAbility* UProjectLuxAbilitySystemComponent::ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility>& InAbilityToActivate, bool& OutIsInstance)
+UGameplayAbility *UProjectLuxAbilitySystemComponent::ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToActivate, bool &OutIsInstance)
 {
 	if (!TryActivateAbilityByClass(InAbilityToActivate))
 	{
@@ -51,17 +48,17 @@ UGameplayAbility* UProjectLuxAbilitySystemComponent::ActivateAbilityOfClass(cons
 		return nullptr;
 	}
 
-	const UGameplayAbility* const InAbilityCDO = InAbilityToActivate.GetDefaultObject();
+	const UGameplayAbility *const InAbilityCDO = InAbilityToActivate.GetDefaultObject();
 
-	for (const FGameplayAbilitySpec& ActivatableSpec : ActivatableAbilities.Items)
+	for (const FGameplayAbilitySpec &ActivatableSpec : ActivatableAbilities.Items)
 	{
 		if (ActivatableSpec.Ability == InAbilityCDO)
-		{			
-			const FGameplayAbilitySpec* const Spec = FindAbilitySpecFromHandle(ActivatableSpec.Handle);
+		{
+			const FGameplayAbilitySpec *const Spec = FindAbilitySpecFromHandle(ActivatableSpec.Handle);
 
 			// try to get the ability instance
 			// Note: we need a instanced ability to be able to bind to its "Event Dispatchers"
-			UGameplayAbility* AbilityInstance = Spec->GetPrimaryInstance();
+			UGameplayAbility *AbilityInstance = Spec->GetPrimaryInstance();
 
 			if (AbilityInstance)
 			{

@@ -1,21 +1,22 @@
-// Copyright TinyAlmonds (Alex Nördemann)
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #pragma once
 
 #include "AbilitySystemComponent.h"
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
+
 #include "ProjectLuxMovementAttributeSet.generated.h"
 
 // Uses macros from AttributeSet.h for accessing and initializing attributes
-#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
+#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName)           \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
+	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName)               \
+	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName)               \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 // Forward declarations
-template<typename OptionalType>
+template <typename OptionalType>
 struct TOptional;
 
 /**
@@ -35,13 +36,13 @@ public:
 	 * @param Attribute - The attribute whose value will be changed.
 	 * @param OutNewValue - The attribute's new value. This is a mutable reference so you are able to clamp the newly applied value as well.
 	 */
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue) override;
+	virtual void PreAttributeChange(FGameplayAttribute const &Attribute, float &OutNewValue) override;
 
 	/**
 	 * Called just before a GameplayEffect is executed to modify the base value of an attribute. No more changes can be made. Note: This is only called during an 'execute'. E.g., a modification to the 'base value' of an attribute. It is not called during an application of a GameplayEffect, such as a 5 ssecond +10 movement speed buff.
 	 * @param Data - Data struct holding necessary information of the executed/applied GameplayEffect.
-	*/
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	 */
+	virtual void PostGameplayEffectExecute(FGameplayEffectModCallbackData const &Data) override;
 
 	/** Maximum walk speed of the character [uu/s].*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
@@ -90,5 +91,5 @@ private:
 	 * @param Value - The attribute's value to clamp.
 	 * @return An Optional with the clamped value, if the attribute is known to this AttributeSet; else an empty Optional.
 	 */
-	TOptional<float> ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value);
+	TOptional<float> ClampAttributeValue(FGameplayAttribute const &Attribute, float Value);
 };

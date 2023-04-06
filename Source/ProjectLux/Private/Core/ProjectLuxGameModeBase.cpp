@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/ProjectLuxGameModeBase.h"
-

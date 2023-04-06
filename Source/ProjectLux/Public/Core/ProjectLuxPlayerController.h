@@ -1,7 +1,9 @@
+// Copyright TinyAlmonds (Alex Noerdemann)
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
 #include "ProjectLuxPlayerController.generated.h"
 
 /** PlayerController of the ProjectLuxCharacter. */

@@ -1,57 +1,54 @@
-// Copyright TinyAlmonds (Alex Nördemann)
-
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+
 #include "GameplayEffectExtension.h"
 #include "Misc/Optional.h"
 
-UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : 
-	Health{1.0f},
-	MaxHealth{1.0f},
-	RawDamage{1.0f},
-	Armor{1.0f},
-	MinEmotionalDamageMultiplier{0.0f},
-	MinEmotionalResistance{0.0f},
-	MaxEmotionalResistance{1.0f},
-	FearDamageMultiplier{0.0f},
-	FearResistance{1.0f},
-	AngerDamageMultiplier{0.0f},
-	AngerResistance{1.0f},
-	JoyDamageMultiplier{0.0f},
-	JoyResistance{1.0f},
-	SadnessDamageMultiplier{0.0f},
-	SadnessResistance{1.0f},
-	TrustDamageMultiplier{0.0f},
-	TrustResistance{1.0f},
-	LoathingDamageMultiplier{0.0f},
-	LoathingResistance{1.0f},
-	AnticipationDamageMultiplier{0.0f},
-	AnticipationResistance{1.0f},
-	SupriseDamageMultiplier{0.0f},
-	SupriseResistance{1.0f},
-	ReceivedDamage{0.0f}
-{}
+UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : Health{1.0f},
+																	   MaxHealth{1.0f},
+																	   RawDamage{1.0f},
+																	   Armor{1.0f},
+																	   MinEmotionalDamageMultiplier{0.0f},
+																	   MinEmotionalResistance{0.0f},
+																	   MaxEmotionalResistance{1.0f},
+																	   FearDamageMultiplier{0.0f},
+																	   FearResistance{1.0f},
+																	   AngerDamageMultiplier{0.0f},
+																	   AngerResistance{1.0f},
+																	   JoyDamageMultiplier{0.0f},
+																	   JoyResistance{1.0f},
+																	   SadnessDamageMultiplier{0.0f},
+																	   SadnessResistance{1.0f},
+																	   TrustDamageMultiplier{0.0f},
+																	   TrustResistance{1.0f},
+																	   LoathingDamageMultiplier{0.0f},
+																	   LoathingResistance{1.0f},
+																	   AnticipationDamageMultiplier{0.0f},
+																	   AnticipationResistance{1.0f},
+																	   SupriseDamageMultiplier{0.0f},
+																	   SupriseResistance{1.0f},
+																	   ReceivedDamage{0.0f}
+{
+}
 
-void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue)
+void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute &Attribute, float &OutNewValue)
 {
 	Super::PreAttributeChange(Attribute, OutNewValue);
 
-	// clamp value
+	TOptional<float> ClampedValue = ClampAttributeValue(Attribute, OutNewValue);
+	if (ClampedValue)
 	{
-		TOptional<float> ClampedValue = ClampAttributeValue(Attribute, OutNewValue);
-		if (ClampedValue)
-		{
-			OutNewValue = ClampedValue.GetValue();
-		}
+		OutNewValue = ClampedValue.GetValue();
 	}
 }
 
-void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
 	if (Data.EvaluatedData.Attribute == GetReceivedDamageAttribute())
-	{		
+	{
 		// store a local copy of the amount of damage received and consume the damage
 		const float DamageReceivedTmp = GetReceivedDamage();
 		SetReceivedDamage(0.0f);
@@ -67,7 +64,7 @@ void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 	}
 }
 
-TOptional<float> UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
+TOptional<float> UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute &Attribute, const float &Value)
 {
 	if (Attribute == GetHealthAttribute())
 	{

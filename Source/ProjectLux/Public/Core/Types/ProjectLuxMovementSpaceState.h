@@ -1,7 +1,9 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
+
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "ProjectLuxMovementSpaceState.generated.h"
 
 /** Enum indicating the space in which the player is able to move. */

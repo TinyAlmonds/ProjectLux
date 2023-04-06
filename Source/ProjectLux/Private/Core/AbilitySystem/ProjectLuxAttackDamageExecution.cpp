@@ -1,12 +1,12 @@
-// Copyright TinyAlmonds (Alex Nördemann)
-
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/AbilitySystem/ProjectLuxAttackDamageExecution.h"
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+
 #include "AbilitySystemComponent.h"
 #include "GameplayEffect.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 
+#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
 
 /**
  * Struct to capture all needed attributes for the damage calculation from character attacks.
@@ -57,7 +57,7 @@ struct ProjectLuxAttackDamageStatics
 	}
 };
 
-static const ProjectLuxAttackDamageStatics& AttackDamageStatics()
+static const ProjectLuxAttackDamageStatics &AttackDamageStatics()
 {
 	static ProjectLuxAttackDamageStatics AttDmgStatics;
 	return AttDmgStatics;
@@ -86,45 +86,45 @@ UProjectLuxAttackDamageExecution::UProjectLuxAttackDamageExecution()
 	RelevantAttributesToCapture.Add(AttackDamageStatics().ReceivedDamageDef);
 }
 
-void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, OUT FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecutionParameters &ExecutionParams, OUT FGameplayEffectCustomExecutionOutput &OutExecutionOutput) const
 {
-	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	const FGameplayEffectSpec &Spec = ExecutionParams.GetOwningSpec();
 
 	// Gather the tags from the source and target as that can affect which buffs should be used
-	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+	const FGameplayTagContainer *SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer *TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	FAggregatorEvaluateParameters EvaluationParameters;
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
 
 	// calculate the raw damage the target will receive
-	float RawDamageTargetReceives{ 0.0f };
-	float RawDamageSource{ 0.0f };
-	float ArmorTarget{ 0.0f };
+	float RawDamageTargetReceives{0.0f};
+	float RawDamageSource{0.0f};
+	float ArmorTarget{0.0f};
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().RawDamageDef, EvaluationParameters, RawDamageSource);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().ArmorDef, EvaluationParameters, ArmorTarget);
 
 	RawDamageTargetReceives = (5.0f * RawDamageSource * RawDamageSource) / (ArmorTarget + (5.0f * RawDamageSource)) + 1.0f;
 
 	// calculate the emotional damage the target will receive
-	float EmotionalDamageTargetReceives{ 0.0f }; 
-	float FearDamageMultiplierSource{ 0.0f };
-	float FearResistanceTarget{ 1.0f };
-	float AngerDamageMultiplierSource{ 0.0f };
-	float AngerResistanceTarget{ 1.0f };
-	float JoyDamageMultiplierSource{ 0.0f };
-	float JoyResistanceTarget{ 1.0f };
-	float SadnessDamageMultiplierSource{ 0.0f };
-	float SadnessResistanceTarget{ 1.0f };
-	float TrustDamageMultiplierSource{ 0.0f };
-	float TrustResistanceTarget{ 1.0f };
-	float LoathingDamageMultiplierSource{ 0.0f };
-	float LoathingResistanceTarget{ 1.0f };
-	float AnticipationDamageMultiplierSource{ 0.0f };
-	float AnticipationResistanceTarget{ 1.0f };
-	float SupriseDamageMultiplierSource{ 0.0f };
-	float SupriseResistanceTarget{ 1.0f };
+	float EmotionalDamageTargetReceives{0.0f};
+	float FearDamageMultiplierSource{0.0f};
+	float FearResistanceTarget{1.0f};
+	float AngerDamageMultiplierSource{0.0f};
+	float AngerResistanceTarget{1.0f};
+	float JoyDamageMultiplierSource{0.0f};
+	float JoyResistanceTarget{1.0f};
+	float SadnessDamageMultiplierSource{0.0f};
+	float SadnessResistanceTarget{1.0f};
+	float TrustDamageMultiplierSource{0.0f};
+	float TrustResistanceTarget{1.0f};
+	float LoathingDamageMultiplierSource{0.0f};
+	float LoathingResistanceTarget{1.0f};
+	float AnticipationDamageMultiplierSource{0.0f};
+	float AnticipationResistanceTarget{1.0f};
+	float SupriseDamageMultiplierSource{0.0f};
+	float SupriseResistanceTarget{1.0f};
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().FearDamageMultiplierDef, EvaluationParameters, FearDamageMultiplierSource);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().AngerDamageMultiplierDef, EvaluationParameters, AngerDamageMultiplierSource);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().JoyDamageMultiplierDef, EvaluationParameters, JoyDamageMultiplierSource);
@@ -143,13 +143,13 @@ void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEff
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttackDamageStatics().SupriseResistanceDef, EvaluationParameters, SupriseResistanceTarget);
 
 	EmotionalDamageTargetReceives = CalculateEmotionalDamageForEmotion(FearResistanceTarget, FearDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(AngerResistanceTarget, AngerDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(JoyResistanceTarget, JoyDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(SadnessResistanceTarget, SadnessDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(TrustResistanceTarget, TrustDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(LoathingResistanceTarget, LoathingDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(AnticipationResistanceTarget, AnticipationDamageMultiplierSource, RawDamageSource) +
-		CalculateEmotionalDamageForEmotion(SupriseResistanceTarget, SupriseDamageMultiplierSource, RawDamageSource);
+									CalculateEmotionalDamageForEmotion(AngerResistanceTarget, AngerDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(JoyResistanceTarget, JoyDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(SadnessResistanceTarget, SadnessDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(TrustResistanceTarget, TrustDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(LoathingResistanceTarget, LoathingDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(AnticipationResistanceTarget, AnticipationDamageMultiplierSource, RawDamageSource) +
+									CalculateEmotionalDamageForEmotion(SupriseResistanceTarget, SupriseDamageMultiplierSource, RawDamageSource);
 
 	// calculate the total damage and apply to target
 	float TotalDamageTargetReceives = RawDamageTargetReceives + EmotionalDamageTargetReceives;
@@ -164,7 +164,7 @@ void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEff
 
 float UProjectLuxAttackDamageExecution::CalculateEmotionalDamageForEmotion(float EmotionResistanceTarget, float EmotionDamageMultiplierSource, float RawDamageSource)
 {
-	float ResistanceDiff{ 1.0f - EmotionResistanceTarget };
+	float ResistanceDiff{1.0f - EmotionResistanceTarget};
 
 	if (FGenericPlatformMath::Abs(ResistanceDiff) < 0.00001f)
 	{

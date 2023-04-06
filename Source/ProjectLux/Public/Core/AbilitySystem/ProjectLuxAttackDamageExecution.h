@@ -1,4 +1,4 @@
-// Copyright TinyAlmonds (Alex Nördemann)
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #pragma once
 
@@ -16,8 +16,8 @@ class PROJECTLUX_API UProjectLuxAttackDamageExecution : public UGameplayEffectEx
 
 public:
 	UProjectLuxAttackDamageExecution();
-	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, OUT FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
-	
+	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters &ExecutionParams, OUT FGameplayEffectCustomExecutionOutput &OutExecutionOutput) const override;
+
 private:
 	static float CalculateEmotionalDamageForEmotion(float EmotionResistanceTarget, float EmotionDamageMultiplierSource, float RawDamageSource);
 };

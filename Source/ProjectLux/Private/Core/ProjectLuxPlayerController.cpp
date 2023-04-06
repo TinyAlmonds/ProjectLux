@@ -1,6 +1,7 @@
+// Copyright TinyAlmonds (Alex Noerdemann)
 #include "Core/ProjectLuxPlayerController.h"
-#include "Core/ProjectLuxCharacter.h"
 
+#include "Core/ProjectLuxCharacter.h"
 
 AProjectLuxPlayerController::AProjectLuxPlayerController()
 {
@@ -28,10 +29,10 @@ void AProjectLuxPlayerController::SetupInputComponent()
 
 void AProjectLuxPlayerController::JumpPress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->JumpPress();
@@ -41,10 +42,10 @@ void AProjectLuxPlayerController::JumpPress()
 
 void AProjectLuxPlayerController::JumpRelease()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->JumpRelease();
@@ -54,10 +55,10 @@ void AProjectLuxPlayerController::JumpRelease()
 
 void AProjectLuxPlayerController::MoveRight(float AxisValue)
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->MoveRight(AxisValue);
@@ -67,10 +68,10 @@ void AProjectLuxPlayerController::MoveRight(float AxisValue)
 
 void AProjectLuxPlayerController::MoveUp(float AxisValue)
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->MoveUp(AxisValue);
@@ -80,10 +81,10 @@ void AProjectLuxPlayerController::MoveUp(float AxisValue)
 
 void AProjectLuxPlayerController::SprintPress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->SprintPress();
@@ -93,10 +94,10 @@ void AProjectLuxPlayerController::SprintPress()
 
 void AProjectLuxPlayerController::SprintRelease()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->SprintRelease();
@@ -106,10 +107,10 @@ void AProjectLuxPlayerController::SprintRelease()
 
 void AProjectLuxPlayerController::DashPress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->DashPress();
@@ -119,10 +120,10 @@ void AProjectLuxPlayerController::DashPress()
 
 void AProjectLuxPlayerController::QuickStepPress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->QuickStepPress();
@@ -132,10 +133,10 @@ void AProjectLuxPlayerController::QuickStepPress()
 
 void AProjectLuxPlayerController::GlidePress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->GlidePress();
@@ -145,10 +146,10 @@ void AProjectLuxPlayerController::GlidePress()
 
 void AProjectLuxPlayerController::GlideRelease()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->GlideRelease();
@@ -158,10 +159,10 @@ void AProjectLuxPlayerController::GlideRelease()
 
 void AProjectLuxPlayerController::AttackPress()
 {
-    APawn* PossessedPawn = GetPawn();
+    APawn *PossessedPawn = GetPawn();
     if (PossessedPawn)
     {
-        AProjectLuxCharacter* LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
         if (LuxCharacter)
         {
             LuxCharacter->AttackPress();

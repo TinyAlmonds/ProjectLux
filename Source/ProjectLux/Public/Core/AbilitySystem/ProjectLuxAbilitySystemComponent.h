@@ -1,4 +1,4 @@
-// Copyright TinyAlmonds (Alex Nördemann)
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 	 * @return True if the given ability class can be activated; False otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	virtual bool CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility>& InAbilityToCheck);
+	virtual bool CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToCheck);
 
 	/**
 	 * Activates the given ability class.
@@ -30,5 +30,5 @@ public:
 	 * @return Instance of the activated ability of the given class if successful; nullptr otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	virtual UGameplayAbility* ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility>& InAbilityToActivate, bool& OutIsInstance);
+	virtual UGameplayAbility *ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToActivate, bool &OutIsInstance);
 };

@@ -1,7 +1,7 @@
+// Copyright TinyAlmonds (Alex Noerdemann)
+
 #include "Core/ProjectLuxCharacter.h"
-#include "Core/ProjectLuxPlayerController.h"
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
-#include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
+
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -12,25 +12,27 @@
 #include "Math/UnrealMathUtility.h"
 #include "Misc/Optional.h"
 
+#include "Core/ProjectLuxPlayerController.h"
+#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
 
-AProjectLuxCharacter::AProjectLuxCharacter() : 
-	AxisValueMoveUp{0.0f},
-	AxisValueMoveRight{0.0f},
-	bWallSlidingFlag{false},
-	MovementSpace{EMovementSpaceState::MovementIn3D},
-	PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
-	MovementSplineComponentFromWorld{nullptr},
-	SprintAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint")) },
-	WallSlideAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide")) },
-	WallJumpAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump")) },
-	DashAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash")) },
-	DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
-	QuickStepAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Movement.QuickStep")) },
-	GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
-	AttackAbilityTag{ FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack")) },
-	DeadTag{ FGameplayTag::RequestGameplayTag(FName("Status.Dead")) }
+AProjectLuxCharacter::AProjectLuxCharacter() : AxisValueMoveUp{0.0f},
+											   AxisValueMoveRight{0.0f},
+											   bWallSlidingFlag{false},
+											   MovementSpace{EMovementSpaceState::MovementIn3D},
+											   PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
+											   MovementSplineComponentFromWorld{nullptr},
+											   SprintAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint"))},
+											   WallSlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide"))},
+											   WallJumpAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump"))},
+											   DashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash"))},
+											   DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
+											   QuickStepAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.QuickStep"))},
+											   GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
+											   AttackAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack"))},
+											   DeadTag{FGameplayTag::RequestGameplayTag(FName("Status.Dead"))}
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Construct the ASC
@@ -51,7 +53,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 
 	UpdateWallSlidingFlag();
 
@@ -69,8 +71,8 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 		// only allow rotation to movement input when "movement blocking ability" are inactive
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
 		{
-			UpdateMovementToMoveInput();	
-			UpdateRotationToMoveInput();			
+			UpdateMovementToMoveInput();
+			UpdateRotationToMoveInput();
 		}
 		else
 		{
@@ -87,7 +89,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 			if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
-				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
+				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
 
 				// face/rotate the Character in moving direction, since the FindRotationClosestToWorldLocation() does not account for this
 				if (FMath::Abs(ClosestWorldRotationOnSpline.Yaw - GetActorForwardVector().Rotation().Yaw) > 90.0f)
@@ -95,7 +97,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}
 
-				AController* PossessingController = GetController();
+				AController *PossessingController = GetController();
 				if (PossessingController)
 				{
 					PossessingController->SetControlRotation(ClosestWorldRotationOnSpline);
@@ -113,18 +115,18 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	}
 }
 
-UAbilitySystemComponent* AProjectLuxCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent *AProjectLuxCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void AProjectLuxCharacter::PossessedBy(AController* NewController)
+void AProjectLuxCharacter::PossessedBy(AController *NewController)
 {
 	Super::PossessedBy(NewController);
-	
+
 	// set the view target of the controller
 	{
-		AProjectLuxPlayerController* PossessingController = Cast<AProjectLuxPlayerController>(NewController);
+		AProjectLuxPlayerController *PossessingController = Cast<AProjectLuxPlayerController>(NewController);
 		if (PossessingController)
 		{
 			PossessingController->SetViewTarget(this);
@@ -137,11 +139,11 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 
 		// remove and add again the default abilities in case of changes
 		AbilitySystemComponent->ClearAllAbilities();
-		for (TSubclassOf<UGameplayAbility> const & DefaultAbility : DefaultAbilities)
+		for (TSubclassOf<UGameplayAbility> const &DefaultAbility : DefaultAbilities)
 		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility, 1, -1, this));
 		}
-		
+
 		// initialize AttributeSet by an instant GameplayEffect (which does exactly this)
 		{
 			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
@@ -164,8 +166,8 @@ void AProjectLuxCharacter::PossessedBy(AController* NewController)
 		// add delegates to GameplayTag changes
 		AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AProjectLuxCharacter::DeadTagChanged);
 
-		// initialize values which use the Attributes from the related AttributeSet		
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		// initialize values which use the Attributes from the related AttributeSet
+		UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
 			CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMaxWalkSpeed();
@@ -187,7 +189,7 @@ void AProjectLuxCharacter::JumpPress()
 			{
 				Jump();
 			}
-		}		
+		}
 	}
 }
 
@@ -210,7 +212,7 @@ void AProjectLuxCharacter::SprintPress()
 {
 	if (AbilitySystemComponent)
 	{
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent && !CharacterMovementComponent->IsFalling())
 		{
 			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(SprintAbilityTag));
@@ -244,7 +246,7 @@ void AProjectLuxCharacter::DashPress()
 		}
 
 		// activate Dash if possible, else try to use the DoubleDash
-		if(AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
+		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DashAbilityTag)) == false)
 		{
 			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(DoubleDashAbilityTag));
 		}
@@ -255,7 +257,7 @@ void AProjectLuxCharacter::QuickStepPress()
 {
 	if (AbilitySystemComponent)
 	{
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent && !CharacterMovementComponent->IsFalling())
 		{
 			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(QuickStepAbilityTag));
@@ -265,7 +267,7 @@ void AProjectLuxCharacter::QuickStepPress()
 
 void AProjectLuxCharacter::GlidePress()
 {
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (AbilitySystemComponent && CharacterMovementComponent && CharacterMovementComponent->IsFalling())
 	{
 		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GlideAbilityTag)))
@@ -287,14 +289,14 @@ void AProjectLuxCharacter::GlideRelease()
 
 void AProjectLuxCharacter::AttackPress()
 {
-	if (AbilitySystemComponent) 
+	if (AbilitySystemComponent)
 	{
 		// try to set up combo if attack ability is active and the AnimNotify enabled the combo; else activate the abiltiy
 		if (AbilitySystemComponent->HasMatchingGameplayTag(AttackAbilityTag))
 		{
 			if (bAttackAbilityComboEnabled)
 			{
-				UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+				UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance();
 				if (AnimInstance)
 				{
 					AnimInstance->Montage_JumpToSection(AttackAbilityNextSectionCombo, AnimInstance->GetCurrentActiveMontage());
@@ -331,7 +333,7 @@ EMovementSpaceState AProjectLuxCharacter::GetPreviousMovementSpaceState() const
 	return PreviousMovementSpace;
 }
 
-void AProjectLuxCharacter::SetMovementSpline(USplineComponent const* MovementSplineComponent)
+void AProjectLuxCharacter::SetMovementSpline(USplineComponent const *MovementSplineComponent)
 {
 	MovementSplineComponentFromWorld = MovementSplineComponent;
 }
@@ -363,14 +365,14 @@ bool AProjectLuxCharacter::IsDead()
 
 void AProjectLuxCharacter::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 }
 
 void AProjectLuxCharacter::UpdateWallSlidingFlag()
 {
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 
-	if (CharacterMovementComponent && CharacterMovementComponent->IsFalling() && IsTouchingWallForWallSlide() && (CharacterMovementComponent->Velocity.Z <= 0.0f) )
+	if (CharacterMovementComponent && CharacterMovementComponent->IsFalling() && IsTouchingWallForWallSlide() && (CharacterMovementComponent->Velocity.Z <= 0.0f))
 	{
 		SetWallSlidingFlag(true);
 	}
@@ -401,10 +403,10 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 			{
 				// the wall slide ability is more of a passive ability and its behavior is following here
 				// -> passive means that is interacts with other abilites, but not directly (in the Blueprint) doing anything
-				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+				UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 				if (CharacterMovementComponent)
 				{
-					AController* PossessingController = GetController();
+					AController *PossessingController = GetController();
 					if (PossessingController)
 					{
 						// rotate Character to face towards the negated normal of the wall
@@ -412,10 +414,10 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 						PossessingController->SetControlRotation(RotationToFaceWall);
 
 						// let the Character stick on the wall
-						AActor* WallActor = LastValidWallSlideHitResult.GetActor();
+						AActor *WallActor = LastValidWallSlideHitResult.GetActor();
 						if (WallActor && (GetAttachParentActor() != WallActor))
 						{
-							AttachToActor(WallActor, FAttachmentTransformRules{ EAttachmentRule::KeepWorld, true});
+							AttachToActor(WallActor, FAttachmentTransformRules{EAttachmentRule::KeepWorld, true});
 							CharacterMovementComponent->GravityScale = 0.0f;
 							CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
 						}
@@ -426,7 +428,7 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 			{
 				AbilitySystemComponent->TryActivateAbilitiesByTag(WallSlideTags);
 			}
-		}		
+		}
 	}
 	else
 	{
@@ -437,10 +439,10 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 			{
 				AbilitySystemComponent->CancelAbilities(&WallSlideTags);
 
-				UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+				UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 				if (CharacterMovementComponent)
 				{
-					// Do not change the GravityScale to its default value, when the player wants to (Double-)Dash, 
+					// Do not change the GravityScale to its default value, when the player wants to (Double-)Dash,
 					// since this will affect the GravityScale change in the (Double-)Dash ability
 					FGameplayTagContainer DashAbilityTags;
 					DashAbilityTags.AddTag(DashAbilityTag);
@@ -450,10 +452,10 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 						CharacterMovementComponent->GravityScale = DefaultCharacterMovementComponentGravityScale;
 					}
 				}
-				AActor* WallActor = LastValidWallSlideHitResult.GetActor();
+				AActor *WallActor = LastValidWallSlideHitResult.GetActor();
 				if (WallActor && (GetAttachParentActor() == WallActor))
 				{
-					DetachFromActor(FDetachmentTransformRules{ EDetachmentRule::KeepWorld, false });
+					DetachFromActor(FDetachmentTransformRules{EDetachmentRule::KeepWorld, false});
 				}
 			}
 		}
@@ -465,7 +467,7 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 	if (MovementSpace != PreviousMovementSpace)
 	{
 		// restrict the movement of the character
-		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
 			switch (MovementSpace)
@@ -501,30 +503,30 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 			default:
 				break;
 			}
-		}	
+		}
 
 		// call the event of the MovementSpaceState change, so that designers can react to the change
 		MovementSpaceStateChanged();
 	}
 }
 
-void AProjectLuxCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
+void AProjectLuxCharacter::OnHealthChanged(FOnAttributeChangeData const &Data)
 {
 	HealthChanged(Data.OldValue, Data.NewValue);
 }
 
-void AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged(const FOnAttributeChangeData& Data)
+void AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged(FOnAttributeChangeData const &Data)
 {
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->MaxWalkSpeed = Data.NewValue;
 	}
 }
 
-void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(const FOnAttributeChangeData& Data)
+void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(FOnAttributeChangeData const &Data)
 {
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->JumpZVelocity = Data.NewValue;
@@ -601,7 +603,7 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 	}
 
 	// apply movement if useful:
-	if(!MovementDirection.IsNearlyZero())
+	if (!MovementDirection.IsNearlyZero())
 	{
 		MovementDirection.Normalize();
 		AddMovementInput(MovementDirection);
@@ -620,14 +622,14 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 		default:
 			break;
 		}
-	}	
+	}
 }
 
 void AProjectLuxCharacter::UpdateRotationToMoveInput()
 {
-	UWorld* World = GetWorld();
-	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-	AController* PossessingController = GetController();
+	UWorld *World = GetWorld();
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
+	AController *PossessingController = GetController();
 
 	if (World && CharacterMovementComponent && PossessingController)
 	{
@@ -642,8 +644,8 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 			if (AxisValueMoveRight != 0.0f)
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
-				if(WallSlideAbilityActive)
-				{					
+				if (WallSlideAbilityActive)
+				{
 					TryRotateAwayFromWall(DesiredRotationFromInput);
 				}
 				else
@@ -656,7 +658,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
-				if(WallSlideAbilityActive)
+				if (WallSlideAbilityActive)
 				{
 					TryRotateAwayFromWall(DesiredRotationFromInput);
 				}
@@ -672,7 +674,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 				// we only want to find the closest rotation on the spline in the XY plane, since the Character can move freely in the Z direction
 				// Note: we later only need the Yaw value for the rotation
-				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{ CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f }, ESplineCoordinateSpace::World);
+				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
 
 				// if the Character should go "left" rotate him by 180degrees to face in the left direction
 				if (AxisValueMoveRight < 0.0f)
@@ -680,7 +682,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}
 				DesiredRotationFromInput = FRotator(0.0f, ClosestWorldRotationOnSpline.Yaw, 0.0f);
-				if(WallSlideAbilityActive)
+				if (WallSlideAbilityActive)
 				{
 					TryRotateAwayFromWall(DesiredRotationFromInput);
 				}
@@ -693,18 +695,18 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 		default:
 			break;
 		}
-	}	
+	}
 }
 
-void AProjectLuxCharacter::TryRotateAwayFromWall(const FRotator3d& RotationFromInput)
-{	
+void AProjectLuxCharacter::TryRotateAwayFromWall(FRotator3d const &RotationFromInput)
+{
 	static constexpr double YawAngleToleranceInDegrees{45.0 / 2.0};
 
-	AController* PossessingController = GetController();
+	AController *PossessingController = GetController();
 	if (PossessingController)
 	{
 		const double YawAngle{FRotator::NormalizeAxis((RotationFromInput - LastValidWallSlideHitResult.Normal.Rotation()).Yaw)};
-		if(FMath::Abs(YawAngle) < YawAngleToleranceInDegrees)
+		if (FMath::Abs(YawAngle) < YawAngleToleranceInDegrees)
 		{
 			PossessingController->SetControlRotation(RotationFromInput);
 		}

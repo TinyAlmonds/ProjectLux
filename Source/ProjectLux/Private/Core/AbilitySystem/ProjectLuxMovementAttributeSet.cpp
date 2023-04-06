@@ -1,22 +1,22 @@
-// Copyright TinyAlmonds (Alex Nördemann)
-
+// Copyright TinyAlmonds (Alex Noerdemann)
 
 #include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
+
 #include "GameplayEffectExtension.h"
 #include "Misc/Optional.h"
 
-UProjectLuxMovementAttributeSet::UProjectLuxMovementAttributeSet()	:
-	MaxWalkSpeed{600.0f},
-	JumpZVelocity{1000.0f},
-	MaxFallSpeed{-1200.0f},
-	VelocityMultiplierDash{3.0f},
-	VelocityXYMultiplierWallJump{1.8f},
-	VelocityZMultiplierWallJump{1.8f},
-	GravityScaleMultiplierGlide{0.1f},
-	AirControlGlide{0.5f}
-{}
+UProjectLuxMovementAttributeSet::UProjectLuxMovementAttributeSet() : MaxWalkSpeed{600.0f},
+																	 JumpZVelocity{1000.0f},
+																	 MaxFallSpeed{-1200.0f},
+																	 VelocityMultiplierDash{3.0f},
+																	 VelocityXYMultiplierWallJump{1.8f},
+																	 VelocityZMultiplierWallJump{1.8f},
+																	 GravityScaleMultiplierGlide{0.1f},
+																	 AirControlGlide{0.5f}
+{
+}
 
-void UProjectLuxMovementAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& OutNewValue)
+void UProjectLuxMovementAttributeSet::PreAttributeChange(FGameplayAttribute const &Attribute, float &OutNewValue)
 {
 	Super::PreAttributeChange(Attribute, OutNewValue);
 
@@ -30,12 +30,12 @@ void UProjectLuxMovementAttributeSet::PreAttributeChange(const FGameplayAttribut
 	}
 }
 
-void UProjectLuxMovementAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UProjectLuxMovementAttributeSet::PostGameplayEffectExecute(FGameplayEffectModCallbackData const &Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 }
 
-TOptional<float> UProjectLuxMovementAttributeSet::ClampAttributeValue(const FGameplayAttribute& Attribute, const float& Value)
+TOptional<float> UProjectLuxMovementAttributeSet::ClampAttributeValue(FGameplayAttribute const &Attribute, float Value)
 {
 	if (Attribute == GetMaxWalkSpeedAttribute())
 	{
