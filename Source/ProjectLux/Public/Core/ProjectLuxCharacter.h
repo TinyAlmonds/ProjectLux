@@ -138,6 +138,13 @@ public:
 	EMovementSpaceState GetPreviousMovementSpaceState() const;
 
 	/**
+	 * Returns the USplineComponent in the world on which the Character player can move, if in the EMovementSpaceState::MovementOnSpline state.
+	 * @return The spline component member. Has to be checked for validness.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	const USplineComponent *GetMovementSplineComponent();
+
+	/**
 	 * Sets the USplineComponent of the Character to the given value which is needed for the EMovementSpaceState::MovementOnSpline state.
 	 * @param MovementSplineComponent - The USplineComponent to set.
 	 */
