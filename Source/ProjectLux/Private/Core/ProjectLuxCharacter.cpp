@@ -422,7 +422,7 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 						AActor *WallActor = LastValidWallSlideHitResult.GetActor();
 						if (WallActor && (GetAttachParentActor() != WallActor))
 						{
-							AttachToActor(WallActor, FAttachmentTransformRules{EAttachmentRule::KeepWorld, true});
+							AttachToActor(WallActor, FAttachmentTransformRules{EAttachmentRule::KeepWorld, false});
 							CharacterMovementComponent->GravityScale = 0.0f;
 							CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
 						}
@@ -549,14 +549,14 @@ void AProjectLuxCharacter::DeadTagChanged(const FGameplayTag, int32 NewCount)
 
 TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
 {
-	FHitResult OutWallHit;
+	FHitResult OutWallHit{};
 	FVector LineTraceStart = GetActorLocation();
 	FVector LineTraceEnd = LineTraceStart + (GetActorForwardVector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.5f));
-	FName LineTraceProfileName = FName(TEXT("IgnoreOnlyPawn"));
-	FCollisionQueryParams CollisionParams;
+	ECollisionChannel LineTraceChannel{ECollisionChannel::ECC_GameTraceChannel1}; // Wallslide Trace Channel
+	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(this);
 
-	if (GetWorld()->LineTraceSingleByProfile(OutWallHit, LineTraceStart, LineTraceEnd, LineTraceProfileName, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(OutWallHit, LineTraceStart, LineTraceEnd, LineTraceChannel, CollisionParams))
 	{
 		LastValidWallSlideHitResult = OutWallHit;
 		return TOptional<FHitResult>{OutWallHit};
