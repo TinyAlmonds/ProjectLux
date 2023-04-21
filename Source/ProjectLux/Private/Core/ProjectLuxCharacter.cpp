@@ -425,6 +425,9 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 							AttachToActor(WallActor, FAttachmentTransformRules{EAttachmentRule::KeepWorld, false});
 							CharacterMovementComponent->GravityScale = 0.0f;
 							CharacterMovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
+							// push character to the wall, so he does not hover in front it
+							FHitResult WallPushHitResult{};
+							SetActorRelativeLocation(LastValidWallSlideHitResult.Distance * GetActorForwardVector(), true, &WallPushHitResult, ETeleportType::ResetPhysics);
 						}
 					}
 				}
