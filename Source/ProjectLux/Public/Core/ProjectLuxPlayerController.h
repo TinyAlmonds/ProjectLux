@@ -20,6 +20,8 @@ protected:
 	/** Method binding to the Input axis/action mappings.*/
 	virtual void SetupInputComponent() override;
 
+	virtual void DisableInput(class APlayerController* PlayerController) override;
+
 private:
 	/** Method bound to the "Jump" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void JumpPress();

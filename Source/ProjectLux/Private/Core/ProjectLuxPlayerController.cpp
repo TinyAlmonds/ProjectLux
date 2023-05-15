@@ -27,6 +27,18 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("Attack", IE_Pressed, this, &AProjectLuxPlayerController::AttackPress);
 }
 
+void AProjectLuxPlayerController::DisableInput(class APlayerController *PlayerController)
+{
+    Super::DisableInput(PlayerController);
+
+    // Reset/Release all potential key presses
+    MoveUp(0.0f);
+    MoveRight(0.0f);
+    AProjectLuxPlayerController::JumpRelease();
+    AProjectLuxPlayerController::SprintRelease();
+    AProjectLuxPlayerController::GlideRelease();
+}
+
 void AProjectLuxPlayerController::JumpPress()
 {
     APawn *PossessedPawn = GetPawn();
