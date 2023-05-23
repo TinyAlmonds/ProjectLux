@@ -19,6 +19,7 @@ public:
 	/**
 	 * Teleports the player to the specified PlayerStart.
 	 * @param PlayerStartTag - The tag of the PlayerStart the player should be teleported.
+	 * @note If the tag is not given or "None", the player will be teleported to the last Checkpoint/PlayerStart of the MainSaveGame.
 	 */
 	UFUNCTION(exec, BlueprintNativeEvent, meta = (Cheat = "TeleportToPlayerStart"))
 	void TeleportToPlayerStart(FName PlayerStartTag);
