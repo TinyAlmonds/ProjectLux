@@ -48,12 +48,15 @@ Our commit messages should follow the [Conventional Commits](https://www.convent
 ```
 feat(source-core): Increased max velocity when walking
 
--class: ProjectLuxCharacter
+-class: AProjectLuxCharacter
 ```
 
+#### Branching
+When implementing new features, fixing bugs, etc. create `feature` branches, which use the `develop` branch as their parent. The `main` branch is locked and only used for milestones / releases.
+
 #### Pull requests
-With the development of a new feature (on a distinct feature-branch) a *pull request* should be created, as soon as the first commit is done. Before this is not possible, because GitHub only let's you create pull requests, when changes to the project appear. 
+With the development of a new feature, etc. a *pull request* should be created, as soon as the first commit is done. Beforehand it's not possible, because GitHub only let's you create pull requests when changes to the project appear.
 
 Doing so gives us the opportunity to offer suggestions for changes, review, point out errors and misunderstandings, etc. early and collects everything on a single page.
 
-The pull-request should be created/set as "*Draft*" and "*Draft:*" added at the start of the title, until the work on the feature is over.
+The pull-request should be created/set as "*Draft*" and "*Draft:*" added at the start of the title, until the work on the feature is done.
