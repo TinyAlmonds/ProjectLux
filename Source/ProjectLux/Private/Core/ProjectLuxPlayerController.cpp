@@ -23,7 +23,6 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("Dash", IE_Pressed, this, &AProjectLuxPlayerController::DashPress);
     InputComponent->BindAction("QuickStep", IE_Pressed, this, &AProjectLuxPlayerController::QuickStepPress);
     InputComponent->BindAction("Glide", IE_Pressed, this, &AProjectLuxPlayerController::GlidePress);
-    InputComponent->BindAction("Glide", IE_Released, this, &AProjectLuxPlayerController::GlideRelease);
     InputComponent->BindAction("Attack", IE_Pressed, this, &AProjectLuxPlayerController::AttackPress);
 }
 
@@ -36,7 +35,16 @@ void AProjectLuxPlayerController::DisableInput(class APlayerController *PlayerCo
     MoveRight(0.0f);
     AProjectLuxPlayerController::JumpRelease();
     AProjectLuxPlayerController::SprintRelease();
-    AProjectLuxPlayerController::GlideRelease();
+
+    APawn *PossessedPawn = GetPawn();
+    if (PossessedPawn)
+    {
+        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
+        if (LuxCharacter)
+        {
+            LuxCharacter->TryCancelGlideAbility();
+        }
+    }
 }
 
 void AProjectLuxPlayerController::JumpPress()
@@ -152,19 +160,6 @@ void AProjectLuxPlayerController::GlidePress()
         if (LuxCharacter)
         {
             LuxCharacter->GlidePress();
-        }
-    }
-}
-
-void AProjectLuxPlayerController::GlideRelease()
-{
-    APawn *PossessedPawn = GetPawn();
-    if (PossessedPawn)
-    {
-        AProjectLuxCharacter *LuxCharacter = Cast<AProjectLuxCharacter>(PossessedPawn);
-        if (LuxCharacter)
-        {
-            LuxCharacter->GlideRelease();
         }
     }
 }

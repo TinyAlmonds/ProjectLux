@@ -268,23 +268,31 @@ void AProjectLuxCharacter::QuickStepPress()
 void AProjectLuxCharacter::GlidePress()
 {
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
-	if (AbilitySystemComponent && CharacterMovementComponent && CharacterMovementComponent->IsFalling())
+
+	if (!TryCancelGlideAbility())
 	{
-		if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GlideAbilityTag)))
+		if (AbilitySystemComponent && CharacterMovementComponent && CharacterMovementComponent->IsFalling())
 		{
-			// we want to cancel the jump when the player is still holding the jump key, while trying to perform the Glide
-			StopJumping();
+			if (AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer{GlideAbilityTag}))
+			{
+				// we want to cancel the jump when the player is still holding the jump key, while trying to perform the Glide
+				StopJumping();
+			}
 		}
 	}
 }
 
-void AProjectLuxCharacter::GlideRelease()
+bool AProjectLuxCharacter::TryCancelGlideAbility()
 {
-	FGameplayTagContainer GlideAbilityTags(GlideAbilityTag);
-	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(GlideAbilityTags))
+	FGameplayTagContainer GlideAbilityTagContainer{GlideAbilityTag};
+
+	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(GlideAbilityTagContainer))
 	{
-		AbilitySystemComponent->CancelAbilities(&GlideAbilityTags);
+		AbilitySystemComponent->CancelAbilities(&GlideAbilityTagContainer);
+		return true;
 	}
+
+	return false;
 }
 
 void AProjectLuxCharacter::AttackPress()

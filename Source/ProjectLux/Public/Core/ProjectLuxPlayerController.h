@@ -53,9 +53,6 @@ private:
 	/** Method bound to the "Glide" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void GlidePress();
 
-	/** Method bound to the "Glide" input action mapping, when the button is released. Redirects the input to the related method of the ProjectLuxCharacter. */
-	void GlideRelease();
-
 	/** Method bound to the "Attack" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void AttackPress();
 

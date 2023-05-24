@@ -101,9 +101,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	virtual void GlidePress();
 
-	/** Stops the Glide ability when the Character has this ability. */
+	/** Cancels/stops the Glide ability when the Character has this ability and it's active. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual void GlideRelease();
+	virtual bool TryCancelGlideAbility();
 
 	/** Performs the attack ability when the Character has this ability. */
 	UFUNCTION(BlueprintCallable, Category = "Character|Combat")
