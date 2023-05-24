@@ -38,6 +38,7 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+.vsconfig
 .vscode
 .ignore
 *.code-workspace
