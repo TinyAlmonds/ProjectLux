@@ -12,6 +12,7 @@ Comment: You can create the "Table of Contents", by copying the content of the R
     + [Coding guidelines](#coding-guidelines)
     + [Git and GitHub guidelines](#git-and-github-guidelines)
       - [Commit messages](#commit-messages)
+      - [Branching](#branching)
       - [Pull requests](#pull-requests)
 
 ## Description
