@@ -2,6 +2,7 @@
 #include "Core/ProjectLuxPlayerController.h"
 
 #include "Core/ProjectLuxCharacter.h"
+#include "Core/UI/ProjectLuxHUD.h"
 
 AProjectLuxPlayerController::AProjectLuxPlayerController()
 {
@@ -24,6 +25,9 @@ void AProjectLuxPlayerController::SetupInputComponent()
     InputComponent->BindAction("QuickStep", IE_Pressed, this, &AProjectLuxPlayerController::QuickStepPress);
     InputComponent->BindAction("Glide", IE_Pressed, this, &AProjectLuxPlayerController::GlidePress);
     InputComponent->BindAction("Attack", IE_Pressed, this, &AProjectLuxPlayerController::AttackPress);
+
+    // Bind to input which redirects to the related HUD class
+    InputComponent->BindAction("ShowPauseMenu", IE_Pressed, this, &AProjectLuxPlayerController::ShowPauseMenuPress);
 }
 
 void AProjectLuxPlayerController::DisableInput(class APlayerController *PlayerController)
@@ -173,6 +177,19 @@ void AProjectLuxPlayerController::AttackPress()
         if (LuxCharacter)
         {
             LuxCharacter->AttackPress();
+        }
+    }
+}
+
+void AProjectLuxPlayerController::ShowPauseMenuPress()
+{
+    AHUD *BaseHUD{GetHUD()};
+    if (BaseHUD)
+    {
+        AProjectLuxHUD *LuxHUD = Cast<AProjectLuxHUD>(BaseHUD);
+        if (LuxHUD)
+        {
+            LuxHUD->ShowPauseMenuCalled();
         }
     }
 }

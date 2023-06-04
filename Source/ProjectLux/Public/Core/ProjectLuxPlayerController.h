@@ -58,4 +58,7 @@ private:
 
 	/** Method bound to the "QuickStep" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxCharacter. */
 	void QuickStepPress();
+
+	/** Method bound to the "ShowPauseMenu" input action mapping, when the button is pressed. Redirects the input to the related method of the ProjectLuxHUD. */
+	void ShowPauseMenuPress();
 };
