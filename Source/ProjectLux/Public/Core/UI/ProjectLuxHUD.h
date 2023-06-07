@@ -17,6 +17,10 @@ class PROJECTLUX_API AProjectLuxHUD : public AHUD
 
 public:
 	/** Event for the Blueprint class to react to calls of showing/displaying the Pause Menu.*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Pause Menu", DisplayName = "On Show Pause Menu Called")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Pause Menu", DisplayName = "On Show Pause Menu Called")
 	void ShowPauseMenuCalled();
+
+	/** Event for the Blueprint class to react to calls of showing/displaying the Main Menu.*/
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Main Menu", DisplayName = "On Show Main Menu Called")
+	void ShowMainMenuCalled();
 };
