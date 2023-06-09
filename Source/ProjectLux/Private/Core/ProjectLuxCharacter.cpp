@@ -144,6 +144,13 @@ void AProjectLuxCharacter::PossessedBy(AController *NewController)
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultAbility, 1, -1, this));
 		}
 
+		// add again the default passive abilities in case of changes
+		for (TSubclassOf<UGameplayAbility> const &DefaultPassiveAbility : DefaultPassiveAbilities)
+		{
+			const FGameplayAbilitySpecHandle AppliedPassiveAbilitySpecHandle{AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(DefaultPassiveAbility, 1, -1, this))};
+			AbilitySystemComponent->TryActivateAbility(AppliedPassiveAbilitySpecHandle);
+		}
+
 		// initialize AttributeSet by an instant GameplayEffect (which does exactly this)
 		{
 			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();

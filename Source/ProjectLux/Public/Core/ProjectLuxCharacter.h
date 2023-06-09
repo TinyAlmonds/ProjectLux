@@ -35,6 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
+	/** Default passive GameplayAbilities for this character. These will be removed and added again on character possession. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultPassiveAbilities;
+
 	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
 	TSubclassOf<UGameplayEffect> AttributeSetInitEffect;
