@@ -615,6 +615,7 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 		switch (MovementSpace)
 		{
 		case EMovementSpaceState::MovementIn2D:
+			break;
 		case EMovementSpaceState::MovementIn3D:
 			MovementDirection.X = AxisValueMoveUp;
 			break;
@@ -630,21 +631,6 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 	{
 		MovementDirection.Normalize();
 		AddMovementInput(MovementDirection);
-
-		// update last input to match normalization of the movement direction
-		switch (MovementSpace)
-		{
-		case EMovementSpaceState::MovementIn2D:
-		case EMovementSpaceState::MovementIn3D:
-			AxisValueMoveUp = MovementDirection.X;
-			AxisValueMoveRight = MovementDirection.Y;
-			break;
-		case EMovementSpaceState::MovementOnSpline:
-			AxisValueMoveRight = MovementDirection.Y;
-			break;
-		default:
-			break;
-		}
 	}
 }
 
