@@ -7,7 +7,7 @@
 AProjectLuxPlayerController::AProjectLuxPlayerController()
 {
     PrimaryActorTick.bCanEverTick = true;
-    bAutoManageActiveCameraTarget = false;
+    bAutoManageActiveCameraTarget = true;
 }
 
 void AProjectLuxPlayerController::SetupInputComponent()

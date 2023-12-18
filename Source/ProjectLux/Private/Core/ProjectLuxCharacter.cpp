@@ -124,15 +124,6 @@ void AProjectLuxCharacter::PossessedBy(AController *NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// set the view target of the controller
-	{
-		AProjectLuxPlayerController *PossessingController = Cast<AProjectLuxPlayerController>(NewController);
-		if (PossessingController)
-		{
-			PossessingController->SetViewTarget(this);
-		}
-	}
-
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);

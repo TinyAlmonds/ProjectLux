@@ -1,6 +1,7 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 #pragma once
 
+#include "Camera/CameraActor.h"
 #include "Components/SplineComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerStart.h"
@@ -31,6 +32,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement Space")
 	const USplineComponent *GetSpawnMovementSplineComponent();
 
+	/**
+	 * Returns the ACameraActor in the world used on spawn.
+	 * @return The camera actor member. Has to be checked for validness.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Movement Space")
+	const ACameraActor *GetSpawnCamera();
+
 protected:
 	/** Member indicating the space the spawned player is able to move in.*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Config")
@@ -43,4 +51,8 @@ protected:
 	/** Reference to the USplineComponent of the Actor in the world which holds the USplineComponent on which the player can move, if in the EMovementSpaceState::MovementOnSpline state.*/
 	UPROPERTY()
 	TWeakObjectPtr<USplineComponent> MovementSplineComponentFromWorld{nullptr};
+
+	/** Reference to an ACameraActor in the world to use on spawn. If not set, we use the default camera of the player.*/
+	UPROPERTY(EditAnywhere, Category = "Config")
+	TWeakObjectPtr<ACameraActor> SpawnCamera{nullptr};
 };

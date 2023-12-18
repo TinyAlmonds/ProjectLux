@@ -22,3 +22,8 @@ const USplineComponent *AProjectLuxPlayerStart::GetSpawnMovementSplineComponent(
 
     return MovementSplineComponentFromWorld.Get();
 }
+
+const ACameraActor *AProjectLuxPlayerStart::GetSpawnCamera()
+{
+    return SpawnCamera.Get();
+}
