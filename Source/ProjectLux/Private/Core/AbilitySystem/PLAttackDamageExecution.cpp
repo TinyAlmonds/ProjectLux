@@ -1,17 +1,17 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/AbilitySystem/ProjectLuxAttackDamageExecution.h"
+#include "Core/AbilitySystem/PLAttackDamageExecution.h"
 
 #include "AbilitySystemComponent.h"
 #include "GameplayEffect.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/PLCharacterAttributeSet.h"
 
 /**
  * Struct to capture all needed attributes for the damage calculation from character attacks.
  */
-struct ProjectLuxAttackDamageStatics
+struct PLAttackDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(RawDamage);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
@@ -33,37 +33,37 @@ struct ProjectLuxAttackDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(SupriseResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ReceivedDamage);
 
-	ProjectLuxAttackDamageStatics()
+	PLAttackDamageStatics()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, RawDamage, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, Armor, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, FearDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, FearResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, AngerDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, AngerResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, JoyDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, JoyResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, SadnessDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, SadnessResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, TrustDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, TrustResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, LoathingDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, LoathingResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, AnticipationDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, AnticipationResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, SupriseDamageMultiplier, Source, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, SupriseResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UProjectLuxCharacterAttributeSet, ReceivedDamage, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, RawDamage, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, Armor, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, FearDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, FearResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, AngerDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, AngerResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, JoyDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, JoyResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, SadnessDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, SadnessResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, TrustDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, TrustResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, LoathingDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, LoathingResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, AnticipationDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, AnticipationResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, SupriseDamageMultiplier, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, SupriseResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPLCharacterAttributeSet, ReceivedDamage, Target, false);
 	}
 };
 
-static const ProjectLuxAttackDamageStatics &AttackDamageStatics()
+static const PLAttackDamageStatics &AttackDamageStatics()
 {
-	static ProjectLuxAttackDamageStatics AttDmgStatics;
+	static PLAttackDamageStatics AttDmgStatics;
 	return AttDmgStatics;
 }
 
-UProjectLuxAttackDamageExecution::UProjectLuxAttackDamageExecution()
+UPLAttackDamageExecution::UPLAttackDamageExecution()
 {
 	RelevantAttributesToCapture.Add(AttackDamageStatics().RawDamageDef);
 	RelevantAttributesToCapture.Add(AttackDamageStatics().ArmorDef);
@@ -86,7 +86,7 @@ UProjectLuxAttackDamageExecution::UProjectLuxAttackDamageExecution()
 	RelevantAttributesToCapture.Add(AttackDamageStatics().ReceivedDamageDef);
 }
 
-void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecutionParameters &ExecutionParams, OUT FGameplayEffectCustomExecutionOutput &OutExecutionOutput) const
+void UPLAttackDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecutionParameters &ExecutionParams, OUT FGameplayEffectCustomExecutionOutput &OutExecutionOutput) const
 {
 	const FGameplayEffectSpec &Spec = ExecutionParams.GetOwningSpec();
 
@@ -162,7 +162,7 @@ void UProjectLuxAttackDamageExecution::Execute_Implementation(const FGameplayEff
 	}
 }
 
-float UProjectLuxAttackDamageExecution::CalculateEmotionalDamageForEmotion(float EmotionResistanceTarget, float EmotionDamageMultiplierSource, float RawDamageSource)
+float UPLAttackDamageExecution::CalculateEmotionalDamageForEmotion(float EmotionResistanceTarget, float EmotionDamageMultiplierSource, float RawDamageSource)
 {
 	float ResistanceDiff{1.0f - EmotionResistanceTarget};
 

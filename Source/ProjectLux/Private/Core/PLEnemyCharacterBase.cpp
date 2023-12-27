@@ -1,37 +1,37 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/ProjectLuxEnemyCharacterBase.h"
+#include "Core/PLEnemyCharacterBase.h"
 
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 
-#include "Core/AbilitySystem/ProjectLuxAbilitySystemComponent.h"
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/PLAbilitySystemComponent.h"
+#include "Core/AbilitySystem/PLCharacterAttributeSet.h"
 
-AProjectLuxEnemyCharacterBase::AProjectLuxEnemyCharacterBase() : DeadTag{FGameplayTag::RequestGameplayTag(FName("Status.Dead"))}
+APLEnemyCharacterBase::APLEnemyCharacterBase() : DeadTag{FGameplayTag::RequestGameplayTag(FName("Status.Dead"))}
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Construct the ASC
-	AbilitySystemComponent = CreateDefaultSubobject<UProjectLuxAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UPLAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Construct the attribute sets
-	AttributeSet = CreateDefaultSubobject<UProjectLuxCharacterAttributeSet>(TEXT("AttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UPLCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 
-void AProjectLuxEnemyCharacterBase::Tick(float DeltaTime)
+void APLEnemyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-UAbilitySystemComponent *AProjectLuxEnemyCharacterBase::GetAbilitySystemComponent() const
+UAbilitySystemComponent *APLEnemyCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void AProjectLuxEnemyCharacterBase::PossessedBy(AController *NewController)
+void APLEnemyCharacterBase::PossessedBy(AController *NewController)
 {
 	Super::PossessedBy(NewController);
 
@@ -52,23 +52,23 @@ void AProjectLuxEnemyCharacterBase::PossessedBy(AController *NewController)
 	}
 
 	// add delegates to attribute changes
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxEnemyCharacterBase::OnHealthChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &APLEnemyCharacterBase::OnHealthChanged);
 
 	// add delegates to GameplayTag changes
-	AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AProjectLuxEnemyCharacterBase::OnDeadTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &APLEnemyCharacterBase::OnDeadTagChanged);
 }
 
-void AProjectLuxEnemyCharacterBase::BeginPlay()
+void APLEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AProjectLuxEnemyCharacterBase::OnHealthChanged(FOnAttributeChangeData const &Data)
+void APLEnemyCharacterBase::OnHealthChanged(FOnAttributeChangeData const &Data)
 {
 	HealthChanged(Data.OldValue, Data.NewValue);
 }
 
-void AProjectLuxEnemyCharacterBase::HealthChanged_Implementation(float OldValue, float NewValue)
+void APLEnemyCharacterBase::HealthChanged_Implementation(float OldValue, float NewValue)
 {
 	if (NewValue <= 0.0f)
 	{
@@ -76,12 +76,12 @@ void AProjectLuxEnemyCharacterBase::HealthChanged_Implementation(float OldValue,
 	}
 }
 
-void AProjectLuxEnemyCharacterBase::OnDeadTagChanged(const FGameplayTag, int32 NewCount)
+void APLEnemyCharacterBase::OnDeadTagChanged(const FGameplayTag, int32 NewCount)
 {
 	DeadTagChanged(NewCount);
 }
 
-void AProjectLuxEnemyCharacterBase::DeadTagChanged_Implementation(int32 NewCount)
+void APLEnemyCharacterBase::DeadTagChanged_Implementation(int32 NewCount)
 {
 	// signal character death on dead tag application
 	if (NewCount == 1)

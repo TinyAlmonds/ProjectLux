@@ -1,11 +1,11 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
+#include "Core/AbilitySystem/PLMovementAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Misc/Optional.h"
 
-UProjectLuxMovementAttributeSet::UProjectLuxMovementAttributeSet() : MaxWalkSpeed{600.0f},
+UPLMovementAttributeSet::UPLMovementAttributeSet() : MaxWalkSpeed{600.0f},
 																	 JumpZVelocity{1000.0f},
 																	 MaxFallSpeed{-1200.0f},
 																	 VelocityMultiplierDash{3.0f},
@@ -16,7 +16,7 @@ UProjectLuxMovementAttributeSet::UProjectLuxMovementAttributeSet() : MaxWalkSpee
 {
 }
 
-void UProjectLuxMovementAttributeSet::PreAttributeChange(FGameplayAttribute const &Attribute, float &OutNewValue)
+void UPLMovementAttributeSet::PreAttributeChange(FGameplayAttribute const &Attribute, float &OutNewValue)
 {
 	Super::PreAttributeChange(Attribute, OutNewValue);
 
@@ -30,12 +30,12 @@ void UProjectLuxMovementAttributeSet::PreAttributeChange(FGameplayAttribute cons
 	}
 }
 
-void UProjectLuxMovementAttributeSet::PostGameplayEffectExecute(FGameplayEffectModCallbackData const &Data)
+void UPLMovementAttributeSet::PostGameplayEffectExecute(FGameplayEffectModCallbackData const &Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 }
 
-TOptional<float> UProjectLuxMovementAttributeSet::ClampAttributeValue(FGameplayAttribute const &Attribute, float Value)
+TOptional<float> UPLMovementAttributeSet::ClampAttributeValue(FGameplayAttribute const &Attribute, float Value)
 {
 	if (Attribute == GetMaxWalkSpeedAttribute())
 	{

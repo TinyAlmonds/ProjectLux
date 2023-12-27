@@ -1,21 +1,21 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
-#include "ProjectLuxAttackDamageExecution.generated.h"
+
+#include "PLAttackDamageExecution.generated.h"
 
 /**
  * Damage calculation for attack abilities, which considers physical as well as emotional attributes.
  */
 UCLASS()
-class PROJECTLUX_API UProjectLuxAttackDamageExecution : public UGameplayEffectExecutionCalculation
+class PROJECTLUX_API UPLAttackDamageExecution : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
 
 public:
-	UProjectLuxAttackDamageExecution();
+	UPLAttackDamageExecution();
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters &ExecutionParams, OUT FGameplayEffectCustomExecutionOutput &OutExecutionOutput) const override;
 
 private:

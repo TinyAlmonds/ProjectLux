@@ -3,11 +3,11 @@
 
 #include "CoreMinimal.h"
 
-#include "ProjectLuxTrackActorSettings.generated.h"
+#include "PLTrackActorSettings.generated.h"
 
 /** Enumeration for the mode of tracking actors. */
 UENUM(BlueprintType)
-enum class EProjectLuxTrackActorMode : uint8
+enum class EPLTrackActorMode : uint8
 {
 	Actor,
 	Player
@@ -15,16 +15,16 @@ enum class EProjectLuxTrackActorMode : uint8
 
 /** Struct holding information about tracking an actor. */
 USTRUCT(BlueprintType)
-struct FProjectLuxTrackActorSet
+struct FPLTrackActorSet
 {
 	GENERATED_BODY()
 
 	/**	The used TrackActorMode. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
-	EProjectLuxTrackActorMode Mode{};
+	EPLTrackActorMode Mode{};
 
 	/**	The actor to track. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (EditCondition = "Mode == EProjectLuxTrackActorMode::Actor", EditConditionHides))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (EditCondition = "Mode == EPLTrackActorMode::Actor", EditConditionHides))
 	TWeakObjectPtr<AActor> Actor{nullptr};
 
 	/**	The rotation rate indicating how fast the actor should be tracked (similar to lag). */

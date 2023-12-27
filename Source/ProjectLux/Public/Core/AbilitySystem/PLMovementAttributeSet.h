@@ -1,12 +1,11 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "AbilitySystemComponent.h"
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 
-#include "ProjectLuxMovementAttributeSet.generated.h"
+#include "PLMovementAttributeSet.generated.h"
 
 // Uses macros from AttributeSet.h for accessing and initializing attributes
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName)           \
@@ -20,16 +19,16 @@ template <typename OptionalType>
 struct TOptional;
 
 /**
- * Class holding all movement related attributes needed for the AProjectLuxCharacter.
+ * Class holding all movement related attributes needed for the APLCharacter.
  */
 UCLASS()
-class PROJECTLUX_API UProjectLuxMovementAttributeSet : public UAttributeSet
+class PROJECTLUX_API UPLMovementAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	UProjectLuxMovementAttributeSet();
-	virtual ~UProjectLuxMovementAttributeSet() = default;
+	UPLMovementAttributeSet();
+	virtual ~UPLMovementAttributeSet() = default;
 
 	/**
 	 * Called just before any modification happens to an attribute. There is no additional context provided here since anything can trigger this: Executed effects, duration based effects, effects being removed, immunity being applied, stacking rules changing, etc.
@@ -47,42 +46,42 @@ public:
 	/** Maximum walk speed of the character [uu/s].*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData MaxWalkSpeed;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, MaxWalkSpeed)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, MaxWalkSpeed)
 
 	/** Jump velocity in z-direction of the character [uu/s].*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData JumpZVelocity;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, JumpZVelocity)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, JumpZVelocity)
 
 	/** Maximum fall speed (velocity in z-direction) of the character [uu/s].*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData MaxFallSpeed;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, MaxFallSpeed)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, MaxFallSpeed)
 
 	/** Velocity  multiplier of the Dash ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData VelocityMultiplierDash;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, VelocityMultiplierDash)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, VelocityMultiplierDash)
 
 	/** Velocity  multiplier in xy-direction of the Wall Jump ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData VelocityXYMultiplierWallJump;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, VelocityXYMultiplierWallJump)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, VelocityXYMultiplierWallJump)
 
 	/** Velocity  multiplier in z-direction of the Wall Jump ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData VelocityZMultiplierWallJump;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, VelocityZMultiplierWallJump)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, VelocityZMultiplierWallJump)
 
 	/** Gravity scale multiplier of the Glide ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData GravityScaleMultiplierGlide;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, GravityScaleMultiplierGlide)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, GravityScaleMultiplierGlide)
 
 	/** AirControl of the Glide ability of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FGameplayAttributeData AirControlGlide;
-	ATTRIBUTE_ACCESSORS(UProjectLuxMovementAttributeSet, AirControlGlide)
+	ATTRIBUTE_ACCESSORS(UPLMovementAttributeSet, AirControlGlide)
 
 private:
 	/**

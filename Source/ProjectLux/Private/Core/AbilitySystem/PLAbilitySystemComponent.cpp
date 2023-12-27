@@ -1,8 +1,8 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/AbilitySystem/ProjectLuxAbilitySystemComponent.h"
+#include "Core/AbilitySystem/PLAbilitySystemComponent.h"
 
-bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToCheck)
+bool UPLAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToCheck)
 {
 	const UGameplayAbility *const InAbilityCDO = InAbilityToCheck.GetDefaultObject();
 
@@ -40,7 +40,7 @@ bool UProjectLuxAbilitySystemComponent::CanActivateAbilityOfClass(const TSubclas
 	return false;
 }
 
-UGameplayAbility *UProjectLuxAbilitySystemComponent::ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToActivate, bool &OutIsInstance)
+UGameplayAbility *UPLAbilitySystemComponent::ActivateAbilityOfClass(const TSubclassOf<UGameplayAbility> &InAbilityToActivate, bool &OutIsInstance)
 {
 	if (!TryActivateAbilityByClass(InAbilityToActivate))
 	{

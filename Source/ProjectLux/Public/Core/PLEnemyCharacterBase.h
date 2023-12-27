@@ -1,5 +1,4 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "AbilitySystemInterface.h"
@@ -7,23 +6,23 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 
-#include "ProjectLuxEnemyCharacterBase.generated.h"
+#include "PLEnemyCharacterBase.generated.h"
 
 // Forward declarations
 struct FOnAttributeChangeData;
-class UProjectLuxAbilitySystemComponent;
+class UPLAbilitySystemComponent;
 class UGameplayAbility;
 class UGameplayEffect;
-class UProjectLuxCharacterAttributeSet;
+class UPLCharacterAttributeSet;
 
 UCLASS()
-class PROJECTLUX_API AProjectLuxEnemyCharacterBase : public ACharacter, public IAbilitySystemInterface
+class PROJECTLUX_API APLEnemyCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AProjectLuxEnemyCharacterBase();
+	APLEnemyCharacterBase();
 
 	/** GameplayEffect which is used to initialize the AttributeSet of the character. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|Abilities")
@@ -82,11 +81,11 @@ protected:
 
 	/** The AbilitySystemComponent of this Actor. */
 	UPROPERTY()
-	UProjectLuxAbilitySystemComponent *AbilitySystemComponent;
+	UPLAbilitySystemComponent *AbilitySystemComponent;
 
 	/** List of attributes modified by the ASC. */
 	UPROPERTY()
-	UProjectLuxCharacterAttributeSet *AttributeSet;
+	UPLCharacterAttributeSet *AttributeSet;
 
 	/** Member holding the tag which describes the death of the character. */
 	FGameplayTag DeadTag;

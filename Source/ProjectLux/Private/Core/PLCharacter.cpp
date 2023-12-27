@@ -1,6 +1,6 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/ProjectLuxCharacter.h"
+#include "Core/PLCharacter.h"
 
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
@@ -12,25 +12,25 @@
 #include "Math/UnrealMathUtility.h"
 #include "Misc/Optional.h"
 
-#include "Core/ProjectLuxPlayerController.h"
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
-#include "Core/AbilitySystem/ProjectLuxMovementAttributeSet.h"
+#include "Core/PLPlayerController.h"
+#include "Core/AbilitySystem/PLCharacterAttributeSet.h"
+#include "Core/AbilitySystem/PLMovementAttributeSet.h"
 
-AProjectLuxCharacter::AProjectLuxCharacter() : AxisValueMoveUp{0.0f},
-											   AxisValueMoveRight{0.0f},
-											   bWallSlidingFlag{false},
-											   MovementSpace{EPLMovementSpaceState::MovementIn3D},
-											   PreviousMovementSpace{EPLMovementSpaceState::MovementIn3D},
-											   MovementSplineComponentFromWorld{nullptr},
-											   SprintAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint"))},
-											   WallSlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide"))},
-											   WallJumpAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump"))},
-											   DashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash"))},
-											   DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
-											   QuickStepAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.QuickStep"))},
-											   GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
-											   AttackAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack"))},
-											   DeadTag{FGameplayTag::RequestGameplayTag(FName("Status.Dead"))}
+APLCharacter::APLCharacter() : AxisValueMoveUp{0.0f},
+							   AxisValueMoveRight{0.0f},
+							   bWallSlidingFlag{false},
+							   MovementSpace{EPLMovementSpaceState::MovementIn3D},
+							   PreviousMovementSpace{EPLMovementSpaceState::MovementIn3D},
+							   MovementSplineComponentFromWorld{nullptr},
+							   SprintAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint"))},
+							   WallSlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide"))},
+							   WallJumpAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallJump"))},
+							   DashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Dash"))},
+							   DoubleDashAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.DoubleDash"))},
+							   QuickStepAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.QuickStep"))},
+							   GlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Glide"))},
+							   AttackAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Combat.Attack"))},
+							   DeadTag{FGameplayTag::RequestGameplayTag(FName("Status.Dead"))}
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,8 +39,8 @@ AProjectLuxCharacter::AProjectLuxCharacter() : AxisValueMoveUp{0.0f},
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// Construct the attribute sets
-	AttributeSet = CreateDefaultSubobject<UProjectLuxCharacterAttributeSet>(TEXT("AttributeSet"));
-	MovementAttributeSet = CreateDefaultSubobject<UProjectLuxMovementAttributeSet>(TEXT("MovementAttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UPLCharacterAttributeSet>(TEXT("AttributeSet"));
+	MovementAttributeSet = CreateDefaultSubobject<UPLMovementAttributeSet>(TEXT("MovementAttributeSet"));
 
 	// Fill the FGameplayTagContainer which blocking certain inputs/abilities
 	MoveBlockingAbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Reject.MoveInput")));
@@ -49,7 +49,7 @@ AProjectLuxCharacter::AProjectLuxCharacter() : AxisValueMoveUp{0.0f},
 	MoveBlockingAbilityTags.AddTag(QuickStepAbilityTag);
 }
 
-void AProjectLuxCharacter::Tick(float DeltaTime)
+void APLCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -115,12 +115,12 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	}
 }
 
-UAbilitySystemComponent *AProjectLuxCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent *APLCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void AProjectLuxCharacter::PossessedBy(AController *NewController)
+void APLCharacter::PossessedBy(AController *NewController)
 {
 	Super::PossessedBy(NewController);
 
@@ -157,12 +157,12 @@ void AProjectLuxCharacter::PossessedBy(AController *NewController)
 		}
 
 		// add delegates to attribute changes
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AProjectLuxCharacter::OnHealthChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetMaxWalkSpeedAttribute()).AddUObject(this, &AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetJumpZVelocityAttribute()).AddUObject(this, &AProjectLuxCharacter::OnJumpZVelocityAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &APLCharacter::OnHealthChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetMaxWalkSpeedAttribute()).AddUObject(this, &APLCharacter::OnMaxWalkSpeedAttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MovementAttributeSet->GetJumpZVelocityAttribute()).AddUObject(this, &APLCharacter::OnJumpZVelocityAttributeChanged);
 
 		// add delegates to GameplayTag changes
-		AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AProjectLuxCharacter::DeadTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(DeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &APLCharacter::DeadTagChanged);
 
 		// initialize values which use the Attributes from the related AttributeSet
 		UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
@@ -174,7 +174,7 @@ void AProjectLuxCharacter::PossessedBy(AController *NewController)
 	}
 }
 
-void AProjectLuxCharacter::JumpPress()
+void APLCharacter::JumpPress()
 {
 	if (AbilitySystemComponent)
 	{
@@ -191,22 +191,22 @@ void AProjectLuxCharacter::JumpPress()
 	}
 }
 
-void AProjectLuxCharacter::JumpRelease()
+void APLCharacter::JumpRelease()
 {
 	StopJumping();
 }
 
-void AProjectLuxCharacter::MoveRight(float AxisValue)
+void APLCharacter::MoveRight(float AxisValue)
 {
 	AxisValueMoveRight = AxisValue;
 }
 
-void AProjectLuxCharacter::MoveUp(float AxisValue)
+void APLCharacter::MoveUp(float AxisValue)
 {
 	AxisValueMoveUp = AxisValue;
 }
 
-void AProjectLuxCharacter::SprintPress()
+void APLCharacter::SprintPress()
 {
 	if (AbilitySystemComponent)
 	{
@@ -218,7 +218,7 @@ void AProjectLuxCharacter::SprintPress()
 	}
 }
 
-void AProjectLuxCharacter::SprintRelease()
+void APLCharacter::SprintRelease()
 {
 	if (AbilitySystemComponent->HasMatchingGameplayTag(SprintAbilityTag))
 	{
@@ -227,7 +227,7 @@ void AProjectLuxCharacter::SprintRelease()
 	}
 }
 
-void AProjectLuxCharacter::DashPress()
+void APLCharacter::DashPress()
 {
 	if (AbilitySystemComponent)
 	{
@@ -251,7 +251,7 @@ void AProjectLuxCharacter::DashPress()
 	}
 }
 
-void AProjectLuxCharacter::QuickStepPress()
+void APLCharacter::QuickStepPress()
 {
 	if (AbilitySystemComponent)
 	{
@@ -263,7 +263,7 @@ void AProjectLuxCharacter::QuickStepPress()
 	}
 }
 
-void AProjectLuxCharacter::GlidePress()
+void APLCharacter::GlidePress()
 {
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 
@@ -280,7 +280,7 @@ void AProjectLuxCharacter::GlidePress()
 	}
 }
 
-bool AProjectLuxCharacter::TryCancelGlideAbility()
+bool APLCharacter::TryCancelGlideAbility()
 {
 	FGameplayTagContainer GlideAbilityTagContainer{GlideAbilityTag};
 
@@ -293,7 +293,7 @@ bool AProjectLuxCharacter::TryCancelGlideAbility()
 	return false;
 }
 
-void AProjectLuxCharacter::AttackPress()
+void APLCharacter::AttackPress()
 {
 	if (AbilitySystemComponent)
 	{
@@ -316,17 +316,17 @@ void AProjectLuxCharacter::AttackPress()
 	}
 }
 
-bool AProjectLuxCharacter::GetWallSlidingFlag() const
+bool APLCharacter::GetWallSlidingFlag() const
 {
 	return bWallSlidingFlag;
 }
 
-EPLMovementSpaceState AProjectLuxCharacter::GetMovementSpaceState() const
+EPLMovementSpaceState APLCharacter::GetMovementSpaceState() const
 {
 	return MovementSpace;
 }
 
-void AProjectLuxCharacter::SetMovementSpaceState(EPLMovementSpaceState State)
+void APLCharacter::SetMovementSpaceState(EPLMovementSpaceState State)
 {
 	PreviousMovementSpace = MovementSpace;
 	MovementSpace = State;
@@ -334,34 +334,34 @@ void AProjectLuxCharacter::SetMovementSpaceState(EPLMovementSpaceState State)
 	OnMovementSpaceStateChanged();
 }
 
-EPLMovementSpaceState AProjectLuxCharacter::GetPreviousMovementSpaceState() const
+EPLMovementSpaceState APLCharacter::GetPreviousMovementSpaceState() const
 {
 	return PreviousMovementSpace;
 }
 
-const USplineComponent *AProjectLuxCharacter::GetMovementSplineComponent()
+const USplineComponent *APLCharacter::GetMovementSplineComponent()
 {
 	return MovementSplineComponentFromWorld;
 }
 
-void AProjectLuxCharacter::SetMovementSpline(USplineComponent const *MovementSplineComponent)
+void APLCharacter::SetMovementSpline(USplineComponent const *MovementSplineComponent)
 {
 	MovementSplineComponentFromWorld = MovementSplineComponent;
 }
 
-void AProjectLuxCharacter::ActivateAttackAbilityCombo(FName ComboNextSectionName)
+void APLCharacter::ActivateAttackAbilityCombo(FName ComboNextSectionName)
 {
 	bAttackAbilityComboEnabled = true;
 	AttackAbilityNextSectionCombo = ComboNextSectionName;
 }
 
-void AProjectLuxCharacter::DeactivateAttackAbilityCombo()
+void APLCharacter::DeactivateAttackAbilityCombo()
 {
 	bAttackAbilityComboEnabled = false;
 	AttackAbilityNextSectionCombo = "COMBODEACTIVATED";
 }
 
-bool AProjectLuxCharacter::IsDead()
+bool APLCharacter::IsDead()
 {
 	if (AbilitySystemComponent)
 	{
@@ -374,12 +374,12 @@ bool AProjectLuxCharacter::IsDead()
 	}
 }
 
-void AProjectLuxCharacter::BeginPlay()
+void APLCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AProjectLuxCharacter::UpdateWallSlidingFlag()
+void APLCharacter::UpdateWallSlidingFlag()
 {
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 
@@ -393,14 +393,14 @@ void AProjectLuxCharacter::UpdateWallSlidingFlag()
 	}
 }
 
-void AProjectLuxCharacter::SetWallSlidingFlag(bool bFlagValue)
+void APLCharacter::SetWallSlidingFlag(bool bFlagValue)
 {
 	bWallSlidingFlag = bFlagValue;
 
 	OnWallSlidingFlagSet();
 }
 
-void AProjectLuxCharacter::OnWallSlidingFlagSet()
+void APLCharacter::OnWallSlidingFlagSet()
 {
 	FGameplayTagContainer WallSlideTags;
 	WallSlideTags.AddTag(WallSlideAbilityTag);
@@ -476,7 +476,7 @@ void AProjectLuxCharacter::OnWallSlidingFlagSet()
 	}
 }
 
-void AProjectLuxCharacter::OnMovementSpaceStateChanged()
+void APLCharacter::OnMovementSpaceStateChanged()
 {
 	if (MovementSpace != PreviousMovementSpace)
 	{
@@ -524,12 +524,12 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 	}
 }
 
-void AProjectLuxCharacter::OnHealthChanged(FOnAttributeChangeData const &Data)
+void APLCharacter::OnHealthChanged(FOnAttributeChangeData const &Data)
 {
 	HealthChanged(Data.OldValue, Data.NewValue);
 }
 
-void AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged(FOnAttributeChangeData const &Data)
+void APLCharacter::OnMaxWalkSpeedAttributeChanged(FOnAttributeChangeData const &Data)
 {
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
@@ -538,7 +538,7 @@ void AProjectLuxCharacter::OnMaxWalkSpeedAttributeChanged(FOnAttributeChangeData
 	}
 }
 
-void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(FOnAttributeChangeData const &Data)
+void APLCharacter::OnJumpZVelocityAttributeChanged(FOnAttributeChangeData const &Data)
 {
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
@@ -547,7 +547,7 @@ void AProjectLuxCharacter::OnJumpZVelocityAttributeChanged(FOnAttributeChangeDat
 	}
 }
 
-void AProjectLuxCharacter::DeadTagChanged(const FGameplayTag, int32 NewCount)
+void APLCharacter::DeadTagChanged(const FGameplayTag, int32 NewCount)
 {
 	// signal character death on tag application
 	if (NewCount == 1)
@@ -556,7 +556,7 @@ void AProjectLuxCharacter::DeadTagChanged(const FGameplayTag, int32 NewCount)
 	}
 }
 
-TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
+TOptional<FHitResult> APLCharacter::IsTouchingWallForWallSlide()
 {
 	FHitResult OutWallHit{};
 	FVector LineTraceStart = GetActorLocation();
@@ -573,7 +573,7 @@ TOptional<FHitResult> AProjectLuxCharacter::IsTouchingWallForWallSlide()
 	return TOptional<FHitResult>{};
 }
 
-void AProjectLuxCharacter::UpdateMovementToMoveInput()
+void APLCharacter::UpdateMovementToMoveInput()
 {
 	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
 	{
@@ -625,7 +625,7 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 	}
 }
 
-void AProjectLuxCharacter::UpdateRotationToMoveInput()
+void APLCharacter::UpdateRotationToMoveInput()
 {
 	UWorld *World = GetWorld();
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
@@ -698,7 +698,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 	}
 }
 
-void AProjectLuxCharacter::TryRotateAwayFromWall(FRotator3d const &RotationFromInput)
+void APLCharacter::TryRotateAwayFromWall(FRotator3d const &RotationFromInput)
 {
 	static constexpr double YawAngleToleranceInDegrees{45.0 / 2.0};
 

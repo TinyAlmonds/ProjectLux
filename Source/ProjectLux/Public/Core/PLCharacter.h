@@ -7,14 +7,14 @@
 #include "GameplayTagContainer.h"
 
 #include "Types/PLMovementSpaceState.h"
-#include "ProjectLuxCharacter.generated.h"
+#include "PLCharacter.generated.h"
 
 // Forward declarations
 class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
-class UProjectLuxCharacterAttributeSet;
-class UProjectLuxMovementAttributeSet;
+class UPLCharacterAttributeSet;
+class UPLMovementAttributeSet;
 struct FOnAttributeChangeData;
 template <typename OptionalType>
 struct TOptional;
@@ -25,7 +25,7 @@ class USplineComponent;
  * Class for the main playable character of the game.
  */
 UCLASS()
-class PROJECTLUX_API AProjectLuxCharacter : public ACharacter, public IAbilitySystemInterface
+class PROJECTLUX_API APLCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -47,7 +47,7 @@ public:
 	TSubclassOf<UGameplayEffect> MovementAttributeSetInitEffect;
 
 	/** Sets default values for this character's properties */
-	AProjectLuxCharacter();
+	APLCharacter();
 
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
@@ -251,11 +251,11 @@ protected:
 
 	/** List of attributes modified by the ability system */
 	UPROPERTY()
-	UProjectLuxCharacterAttributeSet *AttributeSet;
+	UPLCharacterAttributeSet *AttributeSet;
 
 	/** List of movement related attributes modified by the ability system */
 	UPROPERTY()
-	UProjectLuxMovementAttributeSet *MovementAttributeSet;
+	UPLMovementAttributeSet *MovementAttributeSet;
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")

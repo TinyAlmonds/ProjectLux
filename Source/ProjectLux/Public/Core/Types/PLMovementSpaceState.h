@@ -1,5 +1,4 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "CoreMinimal.h"

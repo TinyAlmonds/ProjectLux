@@ -1,17 +1,16 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 
-#include "ProjectLuxHUD.generated.h"
+#include "PLHUD.generated.h"
 
 /**
  * Manages UI and HUD related functionality of the game.
  */
 UCLASS()
-class PROJECTLUX_API AProjectLuxHUD : public AHUD
+class PROJECTLUX_API APLHUD : public AHUD
 {
 	GENERATED_BODY()
 

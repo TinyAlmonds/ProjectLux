@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
-#include "Core/Component/TrackActor/ProjectLuxTrackActorSettings.h"
+#include "Core/Component/TrackActor/PLTrackActorSettings.h"
 #include "PLTrackActorComponent.generated.h"
 
 /**
@@ -27,14 +27,14 @@ public:
 	 * @return The TrackActorMode.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "")
-	EProjectLuxTrackActorMode GetTrackMode() const;
+	EPLTrackActorMode GetTrackMode() const;
 
 	/**
 	 * Sets the TrackActorMode.
 	 * @param Mode - The TrackActorMode to set.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "")
-	void SetTrackMode(EProjectLuxTrackActorMode Mode);
+	void SetTrackMode(EPLTrackActorMode Mode);
 
 	/**
 	 * Returns the tracked actor.
@@ -57,10 +57,10 @@ protected:
 private:
 	/** The settings of the tracking. */
 	UPROPERTY(EditAnywhere, Category = "Config")
-	FProjectLuxTrackActorSet TrackActorSettings{};
+	FPLTrackActorSet TrackActorSettings{};
 
 	/** The previously used TrackMode. */
-	EProjectLuxTrackActorMode PreviousTrackMode{EProjectLuxTrackActorMode::Actor};
+	EPLTrackActorMode PreviousTrackMode{EPLTrackActorMode::Actor};
 
 	/** Method used when the TrackMode changed. */
 	void TrackModeChanged();

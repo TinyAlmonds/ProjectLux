@@ -1,11 +1,11 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "CoreMinimal.h"
-#include "ProjectLuxCharacterAttributeSet.generated.h"
+
+#include "PLCharacterAttributeSet.generated.h"
 
 // Uses macros from AttributeSet.h for accessing and initializing attributes
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName)           \
@@ -19,15 +19,15 @@ template <typename OptionalType>
 struct TOptional;
 
 /**
- * Class holding all attributes needed for the abilities of the AProjectLuxCharacter.
+ * Class holding all attributes needed for the abilities of the APLCharacter.
  */
 UCLASS()
-class PROJECTLUX_API UProjectLuxCharacterAttributeSet : public UAttributeSet
+class PROJECTLUX_API UPLCharacterAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 public:
-	UProjectLuxCharacterAttributeSet();
-	virtual ~UProjectLuxCharacterAttributeSet() = default;
+	UPLCharacterAttributeSet();
+	virtual ~UPLCharacterAttributeSet() = default;
 
 	/**
 	 * Called just before any modification happens to an attribute. There is no additional context provided here since anything can trigger this: Executed effects, duration based effects, effects being removed, immunity being applied, stacking rules changing, etc.
@@ -45,122 +45,122 @@ public:
 	/** Health of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, Health)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, Health)
 
 	/** Maximum health of the character. Used for clamping the maximum value of the Health attribute.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
 	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, MaxHealth)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, MaxHealth)
 
 	/** Raw/base physical damage the character can inflict to something.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
 	FGameplayAttributeData RawDamage;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, RawDamage)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, RawDamage)
 
 	/** Physical armor value of the character, which reduces physical raw/base damage taken by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Physical")
 	FGameplayAttributeData Armor;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, Armor)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, Armor)
 
 	/** Minimum multiplier value of emotional damage inflicted by the character. Used for setting the minimal value of the related attributes.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData MinEmotionalDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, MinEmotionalDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, MinEmotionalDamageMultiplier)
 
 	/** Minimum resistance value against emotional damage of the character. Used for clamping related attributes.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData MinEmotionalResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, MinEmotionalResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, MinEmotionalResistance)
 
 	/** Maximum resistance value against emotional damage of the character. Used for clamping related attributes.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData MaxEmotionalResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, MaxEmotionalResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, MaxEmotionalResistance)
 
 	/** Multiplier value of emotional fear damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData FearDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, FearDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, FearDamageMultiplier)
 
 	/** Resistance value against fear damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData FearResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, FearResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, FearResistance)
 
 	/** Multiplier value of emotional anger damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData AngerDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, AngerDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, AngerDamageMultiplier)
 
 	/** Resistance value against anger damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData AngerResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, AngerResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, AngerResistance)
 
 	/** Multiplier value of emotional joy damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData JoyDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, JoyDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, JoyDamageMultiplier)
 
 	/** Resistance value against joy damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData JoyResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, JoyResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, JoyResistance)
 
 	/** Multiplier value of emotional sadness damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData SadnessDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SadnessDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, SadnessDamageMultiplier)
 
 	/** Resistance value against sadness damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData SadnessResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SadnessResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, SadnessResistance)
 
 	/** Multiplier value of emotional trust damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData TrustDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, TrustDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, TrustDamageMultiplier)
 
 	/** Resistance value against trust damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData TrustResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, TrustResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, TrustResistance)
 
 	/** Multiplier value of emotional loathing damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData LoathingDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, LoathingDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, LoathingDamageMultiplier)
 
 	/** Resistance value against loathing damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData LoathingResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, LoathingResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, LoathingResistance)
 
 	/** Multiplier value of emotional anticipation damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData AnticipationDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, AnticipationDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, AnticipationDamageMultiplier)
 
 	/** Resistance value against anticipation damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData AnticipationResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, AnticipationResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, AnticipationResistance)
 
 	/** Multiplier value of emotional suprise damage inflicted by the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData SupriseDamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SupriseDamageMultiplier)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, SupriseDamageMultiplier)
 
 	/** Resistance value against suprise damage of the character.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Emotional")
 	FGameplayAttributeData SupriseResistance;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, SupriseResistance)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, SupriseResistance)
 
-	/** Temporary/Meta attribute used by the ProjectLuxAttackDamageExecution to hold the final calculated damage the character will receive.*/
+	/** Temporary/Meta attribute used by the PLAttackDamageExecution to hold the final calculated damage the character will receive.*/
 	UPROPERTY(BlueprintReadOnly, Category = "Misc")
 	FGameplayAttributeData ReceivedDamage;
-	ATTRIBUTE_ACCESSORS(UProjectLuxCharacterAttributeSet, ReceivedDamage)
+	ATTRIBUTE_ACCESSORS(UPLCharacterAttributeSet, ReceivedDamage)
 
 private:
 	/**

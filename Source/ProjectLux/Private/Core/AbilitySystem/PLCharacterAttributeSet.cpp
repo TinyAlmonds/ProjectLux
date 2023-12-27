@@ -1,11 +1,11 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 
-#include "Core/AbilitySystem/ProjectLuxCharacterAttributeSet.h"
+#include "Core/AbilitySystem/PLCharacterAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Misc/Optional.h"
 
-UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : Health{1.0f},
+UPLCharacterAttributeSet::UPLCharacterAttributeSet() : Health{1.0f},
 																	   MaxHealth{1.0f},
 																	   RawDamage{1.0f},
 																	   Armor{1.0f},
@@ -32,7 +32,7 @@ UProjectLuxCharacterAttributeSet::UProjectLuxCharacterAttributeSet() : Health{1.
 {
 }
 
-void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute &Attribute, float &OutNewValue)
+void UPLCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute &Attribute, float &OutNewValue)
 {
 	Super::PreAttributeChange(Attribute, OutNewValue);
 
@@ -43,7 +43,7 @@ void UProjectLuxCharacterAttributeSet::PreAttributeChange(const FGameplayAttribu
 	}
 }
 
-void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data)
+void UPLCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -64,7 +64,7 @@ void UProjectLuxCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 	}
 }
 
-TOptional<float> UProjectLuxCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute &Attribute, const float &Value)
+TOptional<float> UPLCharacterAttributeSet::ClampAttributeValue(const FGameplayAttribute &Attribute, const float &Value)
 {
 	if (Attribute == GetHealthAttribute())
 	{

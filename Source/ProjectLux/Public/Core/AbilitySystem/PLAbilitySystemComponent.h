@@ -1,16 +1,16 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "ProjectLuxAbilitySystemComponent.generated.h"
+#include "CoreMinimal.h"
+
+#include "PLAbilitySystemComponent.generated.h"
 
 /**
  * Subclass of UAbilitySystemComponent to extend with game-specific features.
  */
 UCLASS()
-class PROJECTLUX_API UProjectLuxAbilitySystemComponent : public UAbilitySystemComponent
+class PROJECTLUX_API UPLAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 

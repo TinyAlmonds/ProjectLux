@@ -1,17 +1,16 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-
 #pragma once
 
 #include "CoreMinimal.h"
 
 #include "BUICheatManagerBase.h"
-#include "ProjectLuxCheatManager.generated.h"
+#include "PLCheatManager.generated.h"
 
 /**
  * Custom CheatManager class of the project (e.g. for custom console commands).
  */
 UCLASS(meta = (CheatPrefix = "projectlux."))
-class PROJECTLUX_API UProjectLuxCheatManager : public UBUICheatManagerBase
+class PROJECTLUX_API UPLCheatManager : public UBUICheatManagerBase
 {
 	GENERATED_BODY()
 

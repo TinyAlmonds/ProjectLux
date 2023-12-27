@@ -13,7 +13,7 @@ void UPLTrackActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// We have to query the player on every tick, since the player can die and therefore the actor changes.
-	if (TrackActorSettings.Mode == EProjectLuxTrackActorMode::Player)
+	if (TrackActorSettings.Mode == EPLTrackActorMode::Player)
 	{
 		SetTrackActorForPlayerTrackMode();
 	}
@@ -28,12 +28,12 @@ void UPLTrackActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
-EProjectLuxTrackActorMode UPLTrackActorComponent::GetTrackMode() const
+EPLTrackActorMode UPLTrackActorComponent::GetTrackMode() const
 {
 	return TrackActorSettings.Mode;
 }
 
-void UPLTrackActorComponent::SetTrackMode(EProjectLuxTrackActorMode Mode)
+void UPLTrackActorComponent::SetTrackMode(EPLTrackActorMode Mode)
 {
 	PreviousTrackMode = TrackActorSettings.Mode;
 	TrackActorSettings.Mode = Mode;
