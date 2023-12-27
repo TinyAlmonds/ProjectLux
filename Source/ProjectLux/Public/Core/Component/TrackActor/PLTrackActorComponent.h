@@ -5,19 +5,19 @@
 #include "Components/ActorComponent.h"
 
 #include "Core/Component/TrackActor/ProjectLuxTrackActorSettings.h"
-#include "ProjectLuxTrackActorComponent.generated.h"
+#include "PLTrackActorComponent.generated.h"
 
 /**
  * ActorComponent class to track actors or the player actor.
  */
 UCLASS(BlueprintType, Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class PROJECTLUX_API UProjectLuxTrackActorComponent : public UActorComponent
+class PROJECTLUX_API UPLTrackActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	/** Sets default values for this component's properties. */
-	UProjectLuxTrackActorComponent();
+	UPLTrackActorComponent();
 
 	/** The tick method called every frame. */
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;

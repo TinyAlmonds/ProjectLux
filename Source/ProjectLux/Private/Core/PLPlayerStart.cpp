@@ -1,12 +1,12 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-#include "Core/ProjectLuxPlayerStart.h"
+#include "Core/PLPlayerStart.h"
 
-EMovementSpaceState AProjectLuxPlayerStart::GetSpawnMovementSpaceState() const
+EPLMovementSpaceState APLPlayerStart::GetSpawnMovementSpaceState() const
 {
     return MovementSpaceSpawn;
 }
 
-const USplineComponent *AProjectLuxPlayerStart::GetSpawnMovementSplineComponent()
+const USplineComponent *APLPlayerStart::GetSpawnMovementSplineComponent()
 {
     if (!MovementSplineComponentFromWorld.IsValid())
     {
@@ -23,7 +23,7 @@ const USplineComponent *AProjectLuxPlayerStart::GetSpawnMovementSplineComponent(
     return MovementSplineComponentFromWorld.Get();
 }
 
-const ACameraActor *AProjectLuxPlayerStart::GetSpawnCamera()
+const ACameraActor *APLPlayerStart::GetSpawnCamera()
 {
     return SpawnCamera.Get();
 }

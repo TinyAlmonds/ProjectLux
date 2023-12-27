@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 
-#include "Types/ProjectLuxMovementSpaceState.h"
+#include "Types/PLMovementSpaceState.h"
 #include "ProjectLuxCharacter.generated.h"
 
 // Forward declarations
@@ -124,31 +124,31 @@ public:
 	 * @return The current value of the movement space state member.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	EMovementSpaceState GetMovementSpaceState() const;
+	EPLMovementSpaceState GetMovementSpaceState() const;
 
 	/**
 	 * Sets the movement space state of the Character to the given value and triggers a logic on state changes.
-	 * @param State - The EMovementSpaceState to set.
+	 * @param State - The EPLMovementSpaceState to set.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	virtual void SetMovementSpaceState(EMovementSpaceState State);
+	virtual void SetMovementSpaceState(EPLMovementSpaceState State);
 
 	/**
 	 * Returns the previous value of the movement space state.
 	 * @return The previous value of the movement space state member.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
-	EMovementSpaceState GetPreviousMovementSpaceState() const;
+	EPLMovementSpaceState GetPreviousMovementSpaceState() const;
 
 	/**
-	 * Returns the USplineComponent in the world on which the Character player can move, if in the EMovementSpaceState::MovementOnSpline state.
+	 * Returns the USplineComponent in the world on which the Character player can move, if in the EPLMovementSpaceState::MovementOnSpline state.
 	 * @return The spline component member. Has to be checked for validness.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	const USplineComponent *GetMovementSplineComponent();
 
 	/**
-	 * Sets the USplineComponent of the Character to the given value which is needed for the EMovementSpaceState::MovementOnSpline state.
+	 * Sets the USplineComponent of the Character to the given value which is needed for the EPLMovementSpaceState::MovementOnSpline state.
 	 * @param MovementSplineComponent - The USplineComponent to set.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
@@ -269,12 +269,12 @@ protected:
 	bool bWallSlidingFlag;
 
 	/** Member indicating the space the Character is currently able to move in. */
-	EMovementSpaceState MovementSpace;
+	EPLMovementSpaceState MovementSpace;
 
 	/** Member indicating the space the Character was able to move in before the change. */
-	EMovementSpaceState PreviousMovementSpace;
+	EPLMovementSpaceState PreviousMovementSpace;
 
-	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EMovementSpaceState::MovementOnSpline state. */
+	/** Reference to an USplineComponent in the world on which the Character moves, if she is in the EPLMovementSpaceState::MovementOnSpline state. */
 	UPROPERTY()
 	USplineComponent const *MovementSplineComponentFromWorld;
 

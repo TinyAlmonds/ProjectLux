@@ -1,14 +1,14 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
-#include "Core/Component/TrackActor/ProjectLuxTrackActorComponent.h"
+#include "Core/Component/TrackActor/PLTrackActorComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
-UProjectLuxTrackActorComponent::UProjectLuxTrackActorComponent()
+UPLTrackActorComponent::UPLTrackActorComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UProjectLuxTrackActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+void UPLTrackActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -28,12 +28,12 @@ void UProjectLuxTrackActorComponent::TickComponent(float DeltaTime, ELevelTick T
 	}
 }
 
-EProjectLuxTrackActorMode UProjectLuxTrackActorComponent::GetTrackMode() const
+EProjectLuxTrackActorMode UPLTrackActorComponent::GetTrackMode() const
 {
 	return TrackActorSettings.Mode;
 }
 
-void UProjectLuxTrackActorComponent::SetTrackMode(EProjectLuxTrackActorMode Mode)
+void UPLTrackActorComponent::SetTrackMode(EProjectLuxTrackActorMode Mode)
 {
 	PreviousTrackMode = TrackActorSettings.Mode;
 	TrackActorSettings.Mode = Mode;
@@ -44,28 +44,28 @@ void UProjectLuxTrackActorComponent::SetTrackMode(EProjectLuxTrackActorMode Mode
 	}
 }
 
-const AActor *UProjectLuxTrackActorComponent::GetTrackActor() const
+const AActor *UPLTrackActorComponent::GetTrackActor() const
 {
 	return TrackActorSettings.Actor.Get();
 }
 
-void UProjectLuxTrackActorComponent::SetTrackActor(AActor *ActorToTrack)
+void UPLTrackActorComponent::SetTrackActor(AActor *ActorToTrack)
 {
 	TrackActorSettings.Actor = ActorToTrack;
 }
 
-void UProjectLuxTrackActorComponent::BeginPlay()
+void UPLTrackActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UProjectLuxTrackActorComponent::TrackModeChanged()
+void UPLTrackActorComponent::TrackModeChanged()
 {
 	// invalidate tracked actor, since when we change form "Player to Actor" the TrackActor will not be automatically set
 	TrackActorSettings.Actor = nullptr;
 }
 
-void UProjectLuxTrackActorComponent::SetTrackActorForPlayerTrackMode()
+void UPLTrackActorComponent::SetTrackActorForPlayerTrackMode()
 {
 	APawn *Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (Player)

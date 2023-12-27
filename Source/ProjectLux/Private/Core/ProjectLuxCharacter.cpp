@@ -19,8 +19,8 @@
 AProjectLuxCharacter::AProjectLuxCharacter() : AxisValueMoveUp{0.0f},
 											   AxisValueMoveRight{0.0f},
 											   bWallSlidingFlag{false},
-											   MovementSpace{EMovementSpaceState::MovementIn3D},
-											   PreviousMovementSpace{EMovementSpaceState::MovementIn3D},
+											   MovementSpace{EPLMovementSpaceState::MovementIn3D},
+											   PreviousMovementSpace{EPLMovementSpaceState::MovementIn3D},
 											   MovementSplineComponentFromWorld{nullptr},
 											   SprintAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.Sprint"))},
 											   WallSlideAbilityTag{FGameplayTag::RequestGameplayTag(FName("Ability.Movement.WallSlide"))},
@@ -58,7 +58,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 	UpdateWallSlidingFlag();
 
 	// snap Character to closest Spline location, when in Spline Movement
-	if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
+	if ((MovementSpace == EPLMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 	{
 		FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 		// we only want to find the closest location on the spline in the XY plane, since the Character can move freely in the Z direction
@@ -86,7 +86,7 @@ void AProjectLuxCharacter::Tick(float DeltaTime)
 			}
 
 			// rotate Character while moving on a Spline
-			if ((MovementSpace == EMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
+			if ((MovementSpace == EPLMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
@@ -321,12 +321,12 @@ bool AProjectLuxCharacter::GetWallSlidingFlag() const
 	return bWallSlidingFlag;
 }
 
-EMovementSpaceState AProjectLuxCharacter::GetMovementSpaceState() const
+EPLMovementSpaceState AProjectLuxCharacter::GetMovementSpaceState() const
 {
 	return MovementSpace;
 }
 
-void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
+void AProjectLuxCharacter::SetMovementSpaceState(EPLMovementSpaceState State)
 {
 	PreviousMovementSpace = MovementSpace;
 	MovementSpace = State;
@@ -334,7 +334,7 @@ void AProjectLuxCharacter::SetMovementSpaceState(EMovementSpaceState State)
 	OnMovementSpaceStateChanged();
 }
 
-EMovementSpaceState AProjectLuxCharacter::GetPreviousMovementSpaceState() const
+EPLMovementSpaceState AProjectLuxCharacter::GetPreviousMovementSpaceState() const
 {
 	return PreviousMovementSpace;
 }
@@ -486,13 +486,13 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 		{
 			switch (MovementSpace)
 			{
-			case EMovementSpaceState::MovementIn2D:
+			case EPLMovementSpaceState::MovementIn2D:
 				switch (PreviousMovementSpace)
 				{
-				case EMovementSpaceState::MovementIn2D:
+				case EPLMovementSpaceState::MovementIn2D:
 					break;
-				case EMovementSpaceState::MovementIn3D:
-				case EMovementSpaceState::MovementOnSpline:
+				case EPLMovementSpaceState::MovementIn3D:
+				case EPLMovementSpaceState::MovementOnSpline:
 					CharacterMovementComponent->SetPlaneConstraintEnabled(true);
 					CharacterMovementComponent->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 					break;
@@ -500,15 +500,15 @@ void AProjectLuxCharacter::OnMovementSpaceStateChanged()
 					break;
 				}
 				break;
-			case EMovementSpaceState::MovementIn3D:
-			case EMovementSpaceState::MovementOnSpline:
+			case EPLMovementSpaceState::MovementIn3D:
+			case EPLMovementSpaceState::MovementOnSpline:
 				switch (PreviousMovementSpace)
 				{
-				case EMovementSpaceState::MovementIn2D:
+				case EPLMovementSpaceState::MovementIn2D:
 					CharacterMovementComponent->SetPlaneConstraintEnabled(false);
 					break;
-				case EMovementSpaceState::MovementIn3D:
-				case EMovementSpaceState::MovementOnSpline:
+				case EPLMovementSpaceState::MovementIn3D:
+				case EPLMovementSpaceState::MovementOnSpline:
 					break;
 				default:
 					break;
@@ -586,11 +586,11 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 	{
 		switch (MovementSpace)
 		{
-		case EMovementSpaceState::MovementIn2D:
-		case EMovementSpaceState::MovementIn3D:
+		case EPLMovementSpaceState::MovementIn2D:
+		case EPLMovementSpaceState::MovementIn3D:
 			MovementDirection.Y = AxisValueMoveRight;
 			break;
-		case EMovementSpaceState::MovementOnSpline:
+		case EPLMovementSpaceState::MovementOnSpline:
 			if (MovementSplineComponentFromWorld)
 			{
 				MovementDirection = AxisValueMoveRight * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
@@ -605,12 +605,12 @@ void AProjectLuxCharacter::UpdateMovementToMoveInput()
 	{
 		switch (MovementSpace)
 		{
-		case EMovementSpaceState::MovementIn2D:
+		case EPLMovementSpaceState::MovementIn2D:
 			break;
-		case EMovementSpaceState::MovementIn3D:
+		case EPLMovementSpaceState::MovementIn3D:
 			MovementDirection.X = AxisValueMoveUp;
 			break;
-		case EMovementSpaceState::MovementOnSpline:
+		case EPLMovementSpaceState::MovementOnSpline:
 			break;
 		default:
 			break;
@@ -640,7 +640,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 		// calculate the desired rotation depending on the input and "movement space state"
 		switch (MovementSpace)
 		{
-		case EMovementSpaceState::MovementIn2D:
+		case EPLMovementSpaceState::MovementIn2D:
 			if (AxisValueMoveRight != 0.0f)
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
@@ -654,7 +654,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 				}
 			}
 			break;
-		case EMovementSpaceState::MovementIn3D:
+		case EPLMovementSpaceState::MovementIn3D:
 			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
 			{
 				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
@@ -668,7 +668,7 @@ void AProjectLuxCharacter::UpdateRotationToMoveInput()
 				}
 			}
 			break;
-		case EMovementSpaceState::MovementOnSpline:
+		case EPLMovementSpaceState::MovementOnSpline:
 			if ((AxisValueMoveRight != 0.0f) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
