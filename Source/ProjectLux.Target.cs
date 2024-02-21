@@ -8,7 +8,7 @@ public class ProjectLuxTarget : TargetRules
 	public ProjectLuxTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "ProjectLux" } );
 	}
 }
