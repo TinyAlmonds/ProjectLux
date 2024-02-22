@@ -6,6 +6,9 @@
 
 #include "PLPlayerController.generated.h"
 
+// Forward declarations
+class UCameraComponent;
+
 /** PlayerController of the PLCharacter. */
 UCLASS()
 class PROJECTLUX_API APLPlayerController : public APlayerController
@@ -15,6 +18,13 @@ class PROJECTLUX_API APLPlayerController : public APlayerController
 public:
 	/** The default constructor of the class.*/
 	APLPlayerController();
+
+	/**
+	 * Returns the UCameraComponent of the view target.
+	 * @return A pointer to the view target's UCameraComponent if found; otherwise a nullptr.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PLPlayerController")
+	virtual UCameraComponent *GetViewTargetCameraComponent() const;
 
 protected:
 	/** Method binding to the Input axis/action mappings.*/

@@ -225,13 +225,16 @@ protected:
 	virtual TOptional<FHitResult> IsTouchingWallForWallSlide();
 
 	/**
-	 * Updates the movement direction of the Character to the last MoveUp-/Right input. This method is called on every Tick.
-	 * @note The related MoveUp-/Right member are also update, if they are not zero, to match the normalization of the movement direction.
+	 * Returns the movement direction depending on the EPLMovementSpaceState of the Character to the given input vector. This method is called on every Tick.
+	 * @return The extracted movement direction.
 	 */
-	virtual void UpdateMovementToMoveInput();
+	virtual FVector GetMoveDirectionFromMoveInput(FVector2D MoveInputVector) const;
 
-	/** Updates the rotation of the Character to the last MoveUp-/Right input. This method is called on every Tick. */
-	virtual void UpdateRotationToMoveInput();
+	/**
+	 * Updates the rotation of the Character to the given movement direction. This method is called on every Tick.
+	 * @param MoveDirection - The extracted movement direction.
+	 */
+	virtual void UpdateRotationToMoveDirection(FVector MovementDirection);
 
 	/**
 	 * Tries to rotate the character away from the wall which causes the WallSlide ability. If the input hits a certain threshold away from the wall, the rotation will succeed.
@@ -259,11 +262,15 @@ protected:
 
 	/** Member holding the last set value of the MoveUp axis mapping. */
 	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
-	float AxisValueMoveUp;
+	float AxisValueMoveUp{};
 
 	/** Member holding the last set value of the MoveRight axis mapping. */
 	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
-	float AxisValueMoveRight;
+	float AxisValueMoveRight{};
+
+	/** Member holding the last determined value of the movement direction derived from the user input. */
+	UPROPERTY(BlueprintReadOnly, Category = "Character|Movement")
+	FVector MoveDirection{};
 
 	/** Member indicating whether the Character should wall slide or not. */
 	bool bWallSlidingFlag;

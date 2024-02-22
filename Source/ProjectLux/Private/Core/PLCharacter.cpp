@@ -4,6 +4,7 @@
 
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Engine/EngineTypes.h"
@@ -53,30 +54,34 @@ void APLCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
-
 	UpdateWallSlidingFlag();
 
-	// snap Character to closest Spline location, when in Spline Movement
+	MoveDirection = GetMoveDirectionFromMoveInput(FVector2D{AxisValueMoveUp, AxisValueMoveRight});
+
+	// Snap Character to closest Spline location, when in Spline Movement:
 	if ((MovementSpace == EPLMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 	{
 		FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
-		// we only want to find the closest location on the spline in the XY plane, since the Character can move freely in the Z direction
+		// We only want to find the closest location on the spline in the XY plane, since the Character can move freely in the Z direction.
 		FVector ClosestWorldLocationOnSpline = MovementSplineComponentFromWorld->FindLocationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
 		GetRootComponent()->SetWorldLocation(FVector{ClosestWorldLocationOnSpline.X, ClosestWorldLocationOnSpline.Y, CharacterWorldLocation.Z});
 	}
 
+	// Handle other movement and rotation topics, depending on abilities:
+	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
 	if (AbilitySystemComponent)
 	{
-		// only allow rotation to movement input when "movement blocking ability" are inactive
 		if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) == false)
 		{
-			UpdateMovementToMoveInput();
-			UpdateRotationToMoveInput();
+			if (AbilitySystemComponent->HasAnyMatchingGameplayTags(FGameplayTagContainer(WallSlideAbilityTag)) == false)
+			{
+				AddMovementInput(MoveDirection);
+			}
+			UpdateRotationToMoveDirection(MoveDirection);
 		}
 		else
 		{
-			// stop jumping, when "movement blocking abilities" are active
+			// Stop jumping, when "movement blocking abilities" are active.
 			if (CharacterMovementComponent)
 			{
 				if (CharacterMovementComponent->IsFalling())
@@ -85,13 +90,13 @@ void APLCharacter::Tick(float DeltaTime)
 				}
 			}
 
-			// rotate Character while moving on a Spline
+			// Rotate Character while moving on a Spline.
 			if ((MovementSpace == EPLMovementSpaceState::MovementOnSpline) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
 				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
 
-				// face/rotate the Character in moving direction, since the FindRotationClosestToWorldLocation() does not account for this
+				// Face/rotate the Character in moving direction, since the FindRotationClosestToWorldLocation() does not account for this.
 				if (FMath::Abs(ClosestWorldRotationOnSpline.Yaw - GetActorForwardVector().Rotation().Yaw) > 90.0f)
 				{
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
@@ -106,7 +111,7 @@ void APLCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	// limit negative Z-Velocity (for better falling/air control, etc.)
+	// Limit negative Z-Velocity (for better falling/air control, etc.).
 	if (CharacterMovementComponent && MovementAttributeSet)
 	{
 		FVector CharacterVelocity = CharacterMovementComponent->Velocity;
@@ -573,27 +578,21 @@ TOptional<FHitResult> APLCharacter::IsTouchingWallForWallSlide()
 	return TOptional<FHitResult>{};
 }
 
-void APLCharacter::UpdateMovementToMoveInput()
+FVector APLCharacter::GetMoveDirectionFromMoveInput(const FVector2D MoveInputVector) const
 {
-	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(MoveBlockingAbilityTags) || GetWallSlidingFlag())
-	{
-		return;
-	}
-
-	// determine movement direction:
-	FVector MovementDirection(0.0f, 0.0f, 0.0f);
-	if (AxisValueMoveRight != 0.0f)
+	FVector MovementDirection{FVector::Zero()};
+	if (MoveInputVector.Y != 0.0f)
 	{
 		switch (MovementSpace)
 		{
 		case EPLMovementSpaceState::MovementIn2D:
 		case EPLMovementSpaceState::MovementIn3D:
-			MovementDirection.Y = AxisValueMoveRight;
+			MovementDirection.Y = MoveInputVector.Y;
 			break;
 		case EPLMovementSpaceState::MovementOnSpline:
 			if (MovementSplineComponentFromWorld)
 			{
-				MovementDirection = AxisValueMoveRight * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
+				MovementDirection = MoveInputVector.Y * MovementSplineComponentFromWorld->FindTangentClosestToWorldLocation(GetRootComponent()->GetComponentLocation(), ESplineCoordinateSpace::World);
 			}
 			break;
 		default:
@@ -601,14 +600,14 @@ void APLCharacter::UpdateMovementToMoveInput()
 		}
 	}
 
-	if (AxisValueMoveUp != 0.0f)
+	if (MoveInputVector.X != 0.0f)
 	{
 		switch (MovementSpace)
 		{
 		case EPLMovementSpaceState::MovementIn2D:
 			break;
 		case EPLMovementSpaceState::MovementIn3D:
-			MovementDirection.X = AxisValueMoveUp;
+			MovementDirection.X = MoveInputVector.X;
 			break;
 		case EPLMovementSpaceState::MovementOnSpline:
 			break;
@@ -617,15 +616,51 @@ void APLCharacter::UpdateMovementToMoveInput()
 		}
 	}
 
-	// apply movement if useful:
-	if (!MovementDirection.IsNearlyZero())
+	// Apply movement if useful:
+	if (!MovementDirection.IsNearlyZero() && MovementDirection.Normalize())
 	{
-		MovementDirection.Normalize();
-		AddMovementInput(MovementDirection);
+		// In 3D we want to move the Character in the camera space.
+		if (MovementSpace == EPLMovementSpaceState::MovementIn3D)
+		{
+			if (const AController *const PossessingController{GetController()}; PossessingController)
+			{
+				if (const APLPlayerController *const PossessingPlayerController{Cast<APLPlayerController>(PossessingController)}; PossessingPlayerController)
+				{
+					if (const UCameraComponent *const ViewTargetCameraComponent{PossessingPlayerController->GetViewTargetCameraComponent()};
+						ViewTargetCameraComponent)
+					{
+						// For not yet clear reasons, we can't use the "GetComponentRotation()" of the Character's default camera component,
+						// since it has weird yaw-rotations (but pitch is fine). We have to use the CameraSpringArm, since it is not affected by it.
+						// Note: Since we have different information in both cases, we also calculate the camera space slightly different.
+						FVector CameraForwardInWorldXYPlane{};
+						if (const AActor *const ViewTarget{PossessingPlayerController->GetViewTarget()}; ViewTarget && (ViewTarget == Cast<AActor>(this)))
+						{
+							FRotator CameraRotation{ViewTargetCameraComponent->GetAttachParent()->GetRelativeRotation()};
+							const FVector CameraForward{CameraRotation.Vector()};
+							CameraRotation.Yaw = 0.0f;
+							CameraRotation.Roll = 0.0F;
+							CameraForwardInWorldXYPlane = CameraRotation.UnrotateVector(CameraForward);
+						}
+						else
+						{
+							FQuat CameraUpToWorldUpRotation{FQuat::FindBetweenVectors(ViewTargetCameraComponent->GetUpVector(), FVector::UpVector)};
+							CameraForwardInWorldXYPlane = CameraUpToWorldUpRotation.RotateVector(ViewTargetCameraComponent->GetForwardVector());
+						}
+
+						MovementDirection = FQuat::FindBetweenVectors(FVector::ForwardVector, CameraForwardInWorldXYPlane).RotateVector(MovementDirection);
+						MovementDirection.Normalize();
+					}
+				}
+			}
+		}
+
+		return MovementDirection;
 	}
+
+	return FVector::Zero();
 }
 
-void APLCharacter::UpdateRotationToMoveInput()
+void APLCharacter::UpdateRotationToMoveDirection(FVector MovementDirection)
 {
 	UWorld *World = GetWorld();
 	UCharacterMovementComponent *CharacterMovementComponent = GetCharacterMovement();
@@ -637,13 +672,13 @@ void APLCharacter::UpdateRotationToMoveInput()
 		float DeltaSeconds = World->GetDeltaSeconds();
 		float RotationRateYaw = CharacterMovementComponent->RotationRate.Yaw;
 		const bool WallSlideAbilityActive{AbilitySystemComponent->HasAnyMatchingGameplayTags(FGameplayTagContainer(WallSlideAbilityTag))};
-		// calculate the desired rotation depending on the input and "movement space state"
+		// Calculate the desired rotation depending on the input and "movement space state":
 		switch (MovementSpace)
 		{
 		case EPLMovementSpaceState::MovementIn2D:
-			if (AxisValueMoveRight != 0.0f)
+			if (MovementDirection.Y != 0.0f)
 			{
-				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, 0.0f)), 0.0f);
+				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(MovementDirection.Y, 0.0f)), 0.0f);
 				if (WallSlideAbilityActive)
 				{
 					TryRotateAwayFromWall(DesiredRotationFromInput);
@@ -655,9 +690,9 @@ void APLCharacter::UpdateRotationToMoveInput()
 			}
 			break;
 		case EPLMovementSpaceState::MovementIn3D:
-			if ((AxisValueMoveUp != 0.0f) || (AxisValueMoveRight != 0.0f))
+			if (!MovementDirection.IsNearlyZero())
 			{
-				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(AxisValueMoveRight, AxisValueMoveUp)), 0.0f);
+				DesiredRotationFromInput = FRotator(0.0f, FMath::RadiansToDegrees(FMath::Atan2(MovementDirection.Y, MovementDirection.X)), 0.0f);
 				if (WallSlideAbilityActive)
 				{
 					TryRotateAwayFromWall(DesiredRotationFromInput);
@@ -669,15 +704,15 @@ void APLCharacter::UpdateRotationToMoveInput()
 			}
 			break;
 		case EPLMovementSpaceState::MovementOnSpline:
-			if ((AxisValueMoveRight != 0.0f) && MovementSplineComponentFromWorld)
+			if ((MovementDirection.Y != 0.0f) && MovementSplineComponentFromWorld)
 			{
 				FVector CharacterWorldLocation = GetRootComponent()->GetComponentLocation();
-				// we only want to find the closest rotation on the spline in the XY plane, since the Character can move freely in the Z direction
-				// Note: we later only need the Yaw value for the rotation
+				// We only want to find the closest rotation on the spline in the XY plane, since the Character can move freely in the Z direction.
+				// Note: We later only need the Yaw-value for the rotation.
 				FRotator ClosestWorldRotationOnSpline = MovementSplineComponentFromWorld->FindRotationClosestToWorldLocation(FVector{CharacterWorldLocation.X, CharacterWorldLocation.Y, 0.0f}, ESplineCoordinateSpace::World);
 
-				// if the Character should go "left" rotate him by 180degrees to face in the left direction
-				if (AxisValueMoveRight < 0.0f)
+				// If the Character should go "left" rotate him by 180-degrees to face in the left direction.
+				if (MovementDirection.Y < 0.0f)
 				{
 					ClosestWorldRotationOnSpline.Yaw += 180.0f;
 				}

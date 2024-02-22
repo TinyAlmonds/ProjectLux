@@ -1,6 +1,7 @@
 // Copyright TinyAlmonds (Alex Noerdemann)
 #include "Core/PLPlayerController.h"
 
+#include "Camera/CameraComponent.h"
 #include "Core/PLCharacter.h"
 #include "Core/UI/PLHUD.h"
 
@@ -8,6 +9,16 @@ APLPlayerController::APLPlayerController()
 {
     PrimaryActorTick.bCanEverTick = true;
     bAutoManageActiveCameraTarget = true;
+}
+
+UCameraComponent *APLPlayerController::GetViewTargetCameraComponent() const
+{
+    if (const AActor * ViewTarget{GetViewTarget()}; ViewTarget)
+    {
+        return ViewTarget->FindComponentByClass<UCameraComponent>();
+    }
+
+    return nullptr;
 }
 
 void APLPlayerController::SetupInputComponent()
