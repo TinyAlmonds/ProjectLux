@@ -22,7 +22,7 @@ Project Lux is a 2.5D Metroidvania game and is developed with the help of *Unrea
 For collaboration and progress monitoring, a project management system was set up in _Notion_. The workspace can be reached via this link: [tinyalmonds.notion.site](https://tinyalmonds.notion.site/Project-Lux-9a1c528202e5495eaad2026c52145a74?pvs=4). You can get workspace editing/commenting rights from [Alex Nördemann](https://github.com/alexnoerdemann).
 
 ## Guidelines and Best Practices
-> **Note**:  
+> [!NOTE] 
 > None of the upcoming sets of rules and 'best practices' are final and are open for suggestions or own experiences. Feel free to create Issues regarding this topic. Furthermore we try as much as possible to maintain a clean and maintainable project, but we're still an unexperienced team and have a lot to learn.
 
 ### Style Guidelines for Unreal Engine 5
