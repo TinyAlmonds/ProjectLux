@@ -38,6 +38,10 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+.vsconfig
+.vscode
+.ignore
+*.code-workspace
 *.suo
 *.opensdf
 *.sdf
@@ -85,4 +89,3 @@ Debug/*
 
 # local developer files
 Content/Developers/*
-

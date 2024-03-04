@@ -1,0 +1,4 @@
+[submodule "Plugins/BUICheatManager"]
+	path = Plugins/BUICheatManager
+	url = https://github.com/benui-dev/UE-BUICheatManager
+	branch = main
